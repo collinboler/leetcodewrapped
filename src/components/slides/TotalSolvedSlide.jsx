@@ -66,6 +66,7 @@ function TotalSolvedSlide({ data }) {
           transition={{ delay: 0.8 }}
         >
           problems on LeetCode
+          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.5rem', opacity: 0.6 }}>(all-time)</span>
         </motion.div>
 
         <motion.div 

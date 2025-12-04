@@ -35,6 +35,7 @@ function DifficultySlide({ data }) {
           transition={{ delay: 0.2 }}
         >
           Your difficulty breakdown
+          <span style={{ fontSize: '0.9rem', display: 'block', marginTop: '0.5rem', opacity: 0.6, fontWeight: 400 }}>(all-time)</span>
         </motion.h2>
 
         <motion.p
