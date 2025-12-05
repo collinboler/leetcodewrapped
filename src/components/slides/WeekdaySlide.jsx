@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import ShareButton from '../ShareButton';
 
 const YEAR = 2025;
 
-function WeekdaySlide({ data }) {
+function WeekdaySlide({ data, username, avatar }) {
   const calendarData = data.calendar?.submissionCalendar || '{}';
 
   const { mostActiveDay, dayStats, totalSubs } = useMemo(() => {
@@ -88,7 +89,7 @@ function WeekdaySlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your favorite day to code in {YEAR}
+          Your favorite day to leetcode in {YEAR}
         </motion.div>
 
         {totalSubs > 0 ? (
@@ -122,7 +123,7 @@ function WeekdaySlide({ data }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              {dayStats.find(d => d.isMax)?.submissions.toLocaleString()} submissions on {mostActiveDay}s
+              {dayStats.find(d => d.isMax)?.submissions.toLocaleString()} submissions
             </motion.div>
 
             {/* Weekly bar chart - centered */}
@@ -208,6 +209,7 @@ function WeekdaySlide({ data }) {
           </motion.div>
         )}
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

@@ -19,17 +19,6 @@ export async function fetchUserBadges(username) {
   return response.json();
 }
 
-export async function fetchUserContest(username) {
-  const response = await fetch(`${BASE_URL}/${username}/contest`);
-  if (!response.ok) throw new Error('Failed to fetch contest data');
-  return response.json();
-}
-
-export async function fetchUserContestHistory(username) {
-  const data = await fetchUserContest(username);
-  return data.contestHistory || [];
-}
-
 export async function fetchUserCalendar(username) {
   const response = await fetch(`${BASE_URL}/${username}/calendar`);
   if (!response.ok) throw new Error('Failed to fetch calendar');
@@ -60,22 +49,19 @@ export async function fetchAllUserData(username) {
     fetchUserProfile(username),
     fetchUserSolved(username),
     fetchUserBadges(username),
-    fetchUserContest(username),
     fetchUserCalendar(username),
     fetchUserSubmissions(username, 20),
     fetchUserLanguageStats(username),
     fetchUserSkillStats(username),
   ];
 
-  const [profile, solved, badges, contest, calendar, submissions, languageStats, skillStats] = 
+  const [profile, solved, badges, calendar, submissions, languageStats, skillStats] = 
     await Promise.allSettled(promises);
 
   return {
     profile: profile.status === 'fulfilled' ? profile.value : null,
     solved: solved.status === 'fulfilled' ? solved.value : null,
     badges: badges.status === 'fulfilled' ? badges.value : null,
-    contest: contest.status === 'fulfilled' ? contest.value : null,
-    contestHistory: contest.status === 'fulfilled' ? (contest.value?.contestHistory || []) : [],
     calendar: calendar.status === 'fulfilled' ? calendar.value : null,
     submissions: submissions.status === 'fulfilled' ? submissions.value : null,
     languageStats: languageStats.status === 'fulfilled' ? languageStats.value : null,

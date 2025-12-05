@@ -9,28 +9,27 @@ import StreakSlide from './slides/StreakSlide';
 import CalendarSlide from './slides/CalendarSlide';
 import WeekdaySlide from './slides/WeekdaySlide';
 import BestDaySlide from './slides/BestDaySlide';
-import ContestSlide from './slides/ContestSlide';
 import BadgesSlide from './slides/BadgesSlide';
 import FinalSlide from './slides/FinalSlide';
 
 function Wrapped({ data, username, onRestart }) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const avatar = data.profile?.avatar;
   
   const slides = [
     { component: IntroSlide, props: { username, data } },
     // Activity slides first
-    { component: WeekdaySlide, props: { data } },      // Favorite weekday
-    { component: StreakSlide, props: { data } },       // Active days in 2025
-    { component: CalendarSlide, props: { data } },     // Best month
-    { component: BestDaySlide, props: { data } },      // Most productive day
+    { component: WeekdaySlide, props: { data, username, avatar } },      // Favorite weekday
+    { component: StreakSlide, props: { data, username, avatar } },       // Active days in 2025
+    { component: CalendarSlide, props: { data, username, avatar } },     // Best month
+    { component: BestDaySlide, props: { data, username, avatar } },      // Most productive day
     // Then the rest
-    { component: TotalSolvedSlide, props: { data } },
-    { component: DifficultySlide, props: { data } },
-    { component: TopicsSlide, props: { data } },
-    { component: LanguageSlide, props: { data } },
-    { component: ContestSlide, props: { data } },
-    { component: BadgesSlide, props: { data } },
-    { component: FinalSlide, props: { data, username, onRestart } },
+    { component: TotalSolvedSlide, props: { data, username, avatar } },
+    { component: DifficultySlide, props: { data, username, avatar } },
+    { component: TopicsSlide, props: { data, username, avatar } },
+    { component: LanguageSlide, props: { data, username, avatar } },
+    { component: BadgesSlide, props: { data, username, avatar } },
+    { component: FinalSlide, props: { data, username, avatar, onRestart } },
   ];
 
   const goToSlide = useCallback((index) => {
@@ -101,6 +100,46 @@ function Wrapped({ data, username, onRestart }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {/* Header - show on all slides */}
+      <motion.div 
+        className="wrapped-header"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: '1.25rem 1.5rem',
+          gap: '1rem',
+        }}
+      >
+        <img 
+          src="/leetcodewrapped.png" 
+          alt="LeetCode Wrapped" 
+          style={{ width: '48px', height: '48px' }}
+        />
+        <span style={{ 
+          fontFamily: 'Clash Display, sans-serif',
+          fontSize: '1.4rem', 
+          fontWeight: 700, 
+          color: '#FFA116' 
+        }}>
+          LeetCode Wrapped
+        </span>
+        <span style={{ 
+          fontSize: '1.4rem', 
+          fontWeight: 600, 
+          color: 'rgba(255, 255, 255, 0.7)' 
+        }}>
+          2025
+        </span>
+      </motion.div>
+
       <AnimatePresence mode="wait">
         <CurrentSlideComponent 
           key={currentSlide}

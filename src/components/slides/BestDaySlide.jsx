@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import ShareButton from '../ShareButton';
 
 const YEAR = 2025;
 
-function BestDaySlide({ data }) {
+function BestDaySlide({ data, username, avatar }) {
   const calendarData = data.calendar?.submissionCalendar || '{}';
 
   const { bestDay, bestDaySubmissions, formattedDate, dayOfWeek, totalDays } = useMemo(() => {
@@ -112,18 +113,6 @@ function BestDaySlide({ data }) {
           <>
             <motion.div
               style={{
-                fontSize: '4rem',
-                marginBottom: '0.5rem',
-              }}
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-            >
-              🏆
-            </motion.div>
-
-            <motion.div
-              style={{
                 fontFamily: 'Clash Display, sans-serif',
                 fontSize: 'clamp(2rem, 6vw, 3rem)',
                 fontWeight: 700,
@@ -131,10 +120,11 @@ function BestDaySlide({ data }) {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '0.25rem',
+                marginTop: '1rem',
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.4 }}
             >
               {formattedDate}
             </motion.div>
@@ -200,19 +190,6 @@ function BestDaySlide({ data }) {
             >
               {getMessage(bestDaySubmissions)}
             </motion.div>
-
-            <motion.div
-              style={{ 
-                color: 'rgba(255, 255, 255, 0.4)',
-                fontSize: '0.85rem',
-                marginTop: '1.5rem',
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.1 }}
-            >
-              Out of {totalDays} active days in {YEAR}
-            </motion.div>
           </>
         ) : (
           <motion.div
@@ -231,6 +208,7 @@ function BestDaySlide({ data }) {
           </motion.div>
         )}
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

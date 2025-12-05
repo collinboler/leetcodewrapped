@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import ShareButton from '../ShareButton';
 
-function DifficultySlide({ data }) {
+function DifficultySlide({ data, username, avatar }) {
   const easy = data.solved?.easySolved || 0;
   const medium = data.solved?.mediumSolved || 0;
   const hard = data.solved?.hardSolved || 0;
@@ -70,7 +71,7 @@ function DifficultySlide({ data }) {
           </span> problem crusher!
         </motion.p>
 
-        <div className="difficulty-bars" style={{ width: '100%', maxWidth: '500px' }}>
+        <div className="difficulty-bars" style={{ width: '100%', maxWidth: '400px', padding: '0 1rem' }}>
           {difficulties.map((diff, index) => (
             <motion.div 
               key={diff.label}
@@ -95,27 +96,8 @@ function DifficultySlide({ data }) {
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4 }}
-          style={{
-            marginTop: '2rem',
-            textAlign: 'center',
-            padding: '1rem 1.5rem',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '12px',
-          }}
-        >
-          <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-            {total}
-          </div>
-          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-            total problems solved
-          </div>
-        </motion.div>
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

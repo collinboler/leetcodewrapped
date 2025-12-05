@@ -48,9 +48,9 @@ body {
   justify-content: center;
   padding: 2rem;
   background: 
-    radial-gradient(ellipse at 20% 20%, rgba(255, 161, 22, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 161, 22, 0.08) 0%, transparent 70%),
     var(--lc-darker);
   position: relative;
   overflow: hidden;
@@ -64,8 +64,8 @@ body {
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(circle at 25% 25%, rgba(255, 161, 22, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(255, 161, 22, 0.03) 0%, transparent 50%);
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -80,15 +80,9 @@ body {
 }
 
 .logo {
-  width: 80px;
-  height: 80px;
+  width: 160px;
+  height: 160px;
   filter: drop-shadow(0 0 30px rgba(255, 161, 22, 0.5));
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
 }
 
 .landing h1 {
@@ -699,7 +693,7 @@ body {
   height: 50px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   font-size: 1.2rem;
   cursor: pointer;
@@ -749,10 +743,16 @@ body {
   background: rgba(255, 161, 22, 0.7);
 }
 
+/* Wrapped Header */
+.wrapped-header {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .slide {
     padding: 1.5rem;
+    padding-top: 4rem;
   }
   
   .difficulty-item {
@@ -775,6 +775,10 @@ body {
   
   .calendar-grid {
     display: none;
+  }
+  
+  .wrapped-header {
+    justify-content: center !important;
   }
 }
 

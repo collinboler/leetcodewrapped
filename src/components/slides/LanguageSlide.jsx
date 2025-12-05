@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import ShareButton from '../ShareButton';
 
-function LanguageSlide({ data }) {
+function LanguageSlide({ data, username, avatar }) {
   // Get language stats
   let languageStats = [];
   
@@ -10,8 +11,27 @@ function LanguageSlide({ data }) {
     languageStats = data.languageStats;
   }
   
+  // Merge similar languages (Python + Python3, etc.)
+  const mergedStats = {};
+  languageStats.forEach(lang => {
+    // Normalize language name for merging
+    let normalizedName = lang.languageName;
+    if (normalizedName.toLowerCase() === 'python3' || normalizedName.toLowerCase() === 'python') {
+      normalizedName = 'Python';
+    }
+    
+    if (mergedStats[normalizedName]) {
+      mergedStats[normalizedName].problemsSolved += lang.problemsSolved;
+    } else {
+      mergedStats[normalizedName] = { 
+        languageName: normalizedName, 
+        problemsSolved: lang.problemsSolved 
+      };
+    }
+  });
+  
   // Sort by problem count
-  const sortedLanguages = [...languageStats]
+  const sortedLanguages = Object.values(mergedStats)
     .filter(l => l.problemsSolved > 0)
     .sort((a, b) => b.problemsSolved - a.problemsSolved);
 
@@ -136,7 +156,7 @@ function LanguageSlide({ data }) {
 
             <motion.div 
               className="top-language"
-              style={{ textAlign: 'center' }}
+              style={{ textAlign: 'center', marginBottom: '2rem' }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -144,26 +164,18 @@ function LanguageSlide({ data }) {
               {formatLangName(topLanguage.languageName)}
             </motion.div>
 
-            <motion.div
-              style={{ color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2rem', textAlign: 'center' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              {topLanguage.problemsSolved.toLocaleString()} problems solved
-            </motion.div>
-
             {/* Bar graph for top 5 languages */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
+              transition={{ delay: 0.8 }}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.5rem',
                 width: '100%',
-                maxWidth: '400px',
+                maxWidth: '350px',
+                padding: '0 1rem',
               }}
             >
               {top5Languages.map((lang, index) => (
@@ -171,7 +183,7 @@ function LanguageSlide({ data }) {
                   key={lang.languageName}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.1 + index * 0.08 }}
+                  transition={{ delay: 0.9 + index * 0.08 }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -211,19 +223,18 @@ function LanguageSlide({ data }) {
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
                           padding: '0 0.6rem',
-                          minWidth: 'fit-content',
+                          gap: '0.5rem',
                         }}
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.max((lang.problemsSolved / maxSolved) * 100, 25)}%` }}
-                        transition={{ duration: 0.6, delay: 1.2 + index * 0.08 }}
+                        animate={{ width: `${(lang.problemsSolved / maxSolved) * 100}%` }}
+                        transition={{ duration: 0.6, delay: 1 + index * 0.08 }}
                       >
                         <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#fff', whiteSpace: 'nowrap' }}>
                           {formatLangName(lang.languageName)}
                         </span>
                         <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#fff' }}>
-                          {lang.problemsSolved.toLocaleString()}
+                          {lang.problemsSolved}
                         </span>
                       </motion.div>
                     </div>
@@ -235,7 +246,7 @@ function LanguageSlide({ data }) {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.6 }}
+                  transition={{ delay: 1.4 }}
                   style={{
                     textAlign: 'center',
                     color: 'rgba(255, 255, 255, 0.4)',
@@ -270,6 +281,7 @@ function LanguageSlide({ data }) {
           </motion.div>
         )}
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

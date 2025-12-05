@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import ShareButton from '../ShareButton';
 
-function BadgesSlide({ data }) {
+function BadgesSlide({ data, username, avatar }) {
   const badges = data.badges?.badges || [];
   const badgeCount = badges.length;
 
@@ -125,6 +126,7 @@ function BadgesSlide({ data }) {
           </motion.div>
         )}
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

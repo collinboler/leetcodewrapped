@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import ShareButton from '../ShareButton';
 
 const YEAR = 2025;
 
-function CalendarSlide({ data }) {
+function CalendarSlide({ data, username, avatar }) {
   const calendarData = data.calendar?.submissionCalendar || '{}';
 
   // Parse submission calendar and create visualization data
@@ -25,28 +26,21 @@ function CalendarSlide({ data }) {
     const monthSubmissions = {};
     monthNames.forEach(m => monthSubmissions[m] = 0);
 
-    // Days in each month for 2025 (not a leap year)
     const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
-    // Check if it's a leap year
     const isLeapYear = (YEAR % 4 === 0 && YEAR % 100 !== 0) || (YEAR % 400 === 0);
     if (isLeapYear) daysInMonth[1] = 29;
 
-    // Create a map for quick day lookup
     const daySubmissionMap = {};
     
     Object.entries(submissionMap).forEach(([timestamp, count]) => {
       const date = new Date(parseInt(timestamp) * 1000);
-      // Use UTC to match LeetCode's timezone
       if (date.getUTCFullYear() === YEAR) {
-        // Create UTC date key
         const year = date.getUTCFullYear();
         const month = String(date.getUTCMonth() + 1).padStart(2, '0');
         const day = String(date.getUTCDate()).padStart(2, '0');
         const dayKey = `${year}-${month}-${day}`;
         
         daySubmissionMap[dayKey] = (daySubmissionMap[dayKey] || 0) + count;
-        
         totalSubmissions += count;
         maxSubmissions = Math.max(maxSubmissions, count);
         
@@ -60,7 +54,6 @@ function CalendarSlide({ data }) {
       }
     });
 
-    // Find most active month
     let mostActiveMonth = '';
     let activeMonthIdx = 0;
     let maxMonthSubs = 0;
@@ -72,23 +65,17 @@ function CalendarSlide({ data }) {
       }
     });
 
-    // Create month-by-month data with correct number of days
     const months = monthNames.map((name, idx) => {
       const numDays = daysInMonth[idx];
       const days = [];
-      
-      // Get first day of month to know where to start (use UTC)
       const firstDay = new Date(Date.UTC(YEAR, idx, 1));
       const startDayOfWeek = firstDay.getUTCDay();
       
-      // Add empty cells for days before the month starts
       for (let i = 0; i < startDayOfWeek; i++) {
         days.push({ empty: true });
       }
       
-      // Add actual days
       for (let d = 1; d <= numDays; d++) {
-        // Create UTC date key
         const month = String(idx + 1).padStart(2, '0');
         const day = String(d).padStart(2, '0');
         const dayKey = `${YEAR}-${month}-${day}`;
@@ -100,40 +87,20 @@ function CalendarSlide({ data }) {
         if (subs >= 5) level = 3;
         if (subs >= 10) level = 4;
         
-        days.push({
-          day: d,
-          submissions: subs,
-          level,
-          date: dayKey,
-        });
+        days.push({ day: d, submissions: subs, level, date: dayKey });
       }
       
-      return {
-        name,
-        days,
-        total: monthSubmissions[name],
-        idx,
-      };
+      return { name, days, total: monthSubmissions[name], idx };
     });
-
-    // Get most active month data
-    const activeMonthData = months[activeMonthIdx];
 
     return {
       allMonths: months,
-      mostActiveMonthData: activeMonthData,
+      mostActiveMonthData: months[activeMonthIdx],
       mostActiveMonthIdx: activeMonthIdx,
-      stats: {
-        totalSubmissions,
-        maxSubmissions,
-        mostActiveMonth: mostActiveMonth || 'N/A',
-        activeDays: activeDaysCount,
-        monthTotal: maxMonthSubs,
-      }
+      stats: { totalSubmissions, maxSubmissions, mostActiveMonth: mostActiveMonth || 'N/A', activeDays: activeDaysCount, monthTotal: maxMonthSubs }
     };
   }, [calendarData]);
 
-  // Full month names for display
   const fullMonthNames = {
     'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April',
     'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August',
@@ -148,48 +115,44 @@ function CalendarSlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ transform: 'scale(0.92)', transformOrigin: 'top center' }}>
         <motion.div
           style={{ 
-            fontSize: '1.2rem', 
+            fontSize: 'clamp(1rem, 3vw, 1.2rem)', 
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '0.75rem',
+            marginBottom: '0.5rem',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your {YEAR} in Code
+          Most productive month in {YEAR}
         </motion.div>
 
         {stats.activeDays > 0 && mostActiveMonthData ? (
           <>
-            {/* Featured Most Active Month - Large */}
             <motion.div
               style={{
                 background: 'rgba(64, 196, 169, 0.1)',
                 borderRadius: '16px',
-                padding: 'clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3vw, 2rem) clamp(1rem, 2vw, 1.5rem)',
-                marginBottom: '1rem',
+                padding: 'clamp(0.5rem, 1.5vw, 1rem) clamp(0.75rem, 2vw, 1.5rem)',
+                marginBottom: '0.75rem',
                 border: '1px solid rgba(64, 196, 169, 0.3)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 width: '100%',
-                maxWidth: 'clamp(300px, 80vw, 420px)',
-                margin: '0 auto 1rem auto',
+                maxWidth: 'clamp(260px, 70vw, 380px)',
+                margin: '0 auto 0.75rem auto',
               }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <div style={{
-                textAlign: 'center',
-                marginBottom: '0.75rem',
-              }}>
+              <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
                 <div style={{
                   fontFamily: 'Clash Display, sans-serif',
-                  fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+                  fontSize: 'clamp(1.3rem, 3.5vw, 1.8rem)',
                   fontWeight: 700,
                   background: 'linear-gradient(135deg, #40C4A9 0%, #a8edea 100%)',
                   WebkitBackgroundClip: 'text',
@@ -197,29 +160,24 @@ function CalendarSlide({ data }) {
                 }}>
                   {fullMonthNames[mostActiveMonthData.name]}
                 </div>
-                <div style={{ 
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  fontSize: '0.85rem',
-                }}>
-                  Most active month • {stats.monthTotal} submissions
+                <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.75rem' }}>
+                  {stats.monthTotal} submissions
                 </div>
               </div>
               
-              {/* Large calendar grid for most active month */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(7, 1fr)',
-                gap: 'clamp(2px, 0.5vw, 4px)',
+                gap: 'clamp(2px, 0.4vw, 3px)',
                 width: '100%',
-                maxWidth: 'clamp(240px, 70vw, 350px)',
+                maxWidth: 'clamp(200px, 60vw, 300px)',
               }}>
-                {/* Day labels */}
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                   <div key={i} style={{
-                    fontSize: '0.7rem',
+                    fontSize: '0.6rem',
                     color: 'rgba(255, 255, 255, 0.5)',
                     textAlign: 'center',
-                    marginBottom: '4px',
+                    marginBottom: '3px',
                     fontWeight: 500,
                   }}>
                     {day}
@@ -232,38 +190,30 @@ function CalendarSlide({ data }) {
                       width: '100%',
                       aspectRatio: '1',
                       borderRadius: '2px',
-                      background: cell.empty 
-                        ? 'transparent' 
-                        : cell.level === 0 
-                          ? 'rgba(255, 255, 255, 0.08)' 
-                          : cell.level === 1 
-                            ? 'rgba(64, 196, 169, 0.3)'
-                            : cell.level === 2
-                              ? 'rgba(64, 196, 169, 0.5)'
-                              : cell.level === 3
-                                ? 'rgba(64, 196, 169, 0.7)'
-                                : 'rgba(64, 196, 169, 1)',
+                      background: cell.empty ? 'transparent' : 
+                        cell.level === 0 ? 'rgba(255, 255, 255, 0.08)' : 
+                        cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
+                        cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
+                        cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
                     }}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5 + dayIdx * 0.01 }}
-                    title={cell.date ? `${cell.date}: ${cell.submissions} submissions` : ''}
                   />
                 ))}
               </div>
             </motion.div>
 
-            {/* All 12 months - with placeholder for most active */}
             <motion.div 
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(6, 1fr)',
-                gap: 'clamp(0.25rem, 1vw, 0.4rem)',
+                gap: 'clamp(0.2rem, 0.8vw, 0.35rem)',
                 width: '100%',
-                maxWidth: '520px',
+                maxWidth: '480px',
                 justifyItems: 'center',
                 margin: '0 auto',
-                padding: '0 0.5rem',
+                padding: '0 0.25rem',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -273,14 +223,10 @@ function CalendarSlide({ data }) {
                 <motion.div
                   key={month.name}
                   style={{
-                    background: monthIdx === mostActiveMonthIdx 
-                      ? 'rgba(64, 196, 169, 0.15)' 
-                      : 'rgba(255, 255, 255, 0.03)',
-                    borderRadius: '6px',
-                    padding: '0.25rem',
-                    border: monthIdx === mostActiveMonthIdx 
-                      ? '1px solid rgba(64, 196, 169, 0.4)' 
-                      : 'none',
+                    background: monthIdx === mostActiveMonthIdx ? 'rgba(64, 196, 169, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '5px',
+                    padding: '0.2rem',
+                    border: monthIdx === mostActiveMonthIdx ? '1px solid rgba(64, 196, 169, 0.4)' : 'none',
                     width: '100%',
                   }}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -288,37 +234,28 @@ function CalendarSlide({ data }) {
                   transition={{ delay: 0.9 + monthIdx * 0.03 }}
                 >
                   <div style={{
-                    fontSize: '0.5rem',
+                    fontSize: '0.45rem',
                     fontWeight: 600,
-                    color: monthIdx === mostActiveMonthIdx 
-                      ? 'var(--lc-green)' 
-                      : month.total > 0 
-                        ? 'var(--lc-green)' 
-                        : 'rgba(255, 255, 255, 0.3)',
-                    marginBottom: '0.15rem',
+                    color: monthIdx === mostActiveMonthIdx ? 'var(--lc-green)' : month.total > 0 ? 'var(--lc-green)' : 'rgba(255, 255, 255, 0.3)',
+                    marginBottom: '0.1rem',
                     textAlign: 'center',
                   }}>
                     {month.name}
                   </div>
                   {monthIdx === mostActiveMonthIdx ? (
-                    // Placeholder for most active month
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       aspectRatio: '7/5',
                       color: 'rgba(64, 196, 169, 0.6)',
-                      fontSize: '0.5rem',
+                      fontSize: '0.4rem',
                       fontWeight: 500,
                     }}>
                       ↑ Featured
                     </div>
                   ) : (
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(7, 1fr)',
-                      gap: '1px',
-                    }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px' }}>
                       {month.days.map((cell, dayIdx) => (
                         <div
                           key={dayIdx}
@@ -326,19 +263,12 @@ function CalendarSlide({ data }) {
                             width: '100%',
                             aspectRatio: '1',
                             borderRadius: '1px',
-                            background: cell.empty 
-                              ? 'transparent' 
-                              : cell.level === 0 
-                                ? 'rgba(255, 255, 255, 0.06)' 
-                                : cell.level === 1 
-                                  ? 'rgba(64, 196, 169, 0.3)'
-                                  : cell.level === 2
-                                    ? 'rgba(64, 196, 169, 0.5)'
-                                    : cell.level === 3
-                                      ? 'rgba(64, 196, 169, 0.7)'
-                                      : 'rgba(64, 196, 169, 1)',
+                            background: cell.empty ? 'transparent' : 
+                              cell.level === 0 ? 'rgba(255, 255, 255, 0.06)' : 
+                              cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
+                              cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
+                              cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
                           }}
-                          title={cell.date ? `${cell.date}: ${cell.submissions}` : ''}
                         />
                       ))}
                     </div>
@@ -346,7 +276,6 @@ function CalendarSlide({ data }) {
                 </motion.div>
               ))}
             </motion.div>
-
           </>
         ) : (
           <motion.div
@@ -364,50 +293,8 @@ function CalendarSlide({ data }) {
             No activity recorded in {YEAR}
           </motion.div>
         )}
-
-        <motion.div 
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '2rem',
-            marginTop: '1rem',
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', 
-              fontWeight: 700, 
-              color: 'var(--lc-green)' 
-            }}>
-              {stats.activeDays}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>Active Days</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', 
-              fontWeight: 700, 
-              color: 'var(--lc-green)' 
-            }}>
-              {stats.totalSubmissions}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>Total Submissions</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', 
-              fontWeight: 700, 
-              color: 'var(--lc-green)' 
-            }}>
-              {stats.maxSubmissions}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>Max in a Day</div>
-          </div>
-        </motion.div>
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

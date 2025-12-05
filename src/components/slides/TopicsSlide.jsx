@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import ShareButton from '../ShareButton';
 
-function TopicsSlide({ data }) {
+function TopicsSlide({ data, username, avatar }) {
   // Extract topic data from skill stats
   const topics = useMemo(() => {
     let topicList = [];
@@ -34,6 +35,17 @@ function TopicsSlide({ data }) {
   // Get top 6 topics
   const topTopics = topics.slice(0, 6);
   const topTopic = topTopics[0];
+
+  // Shorten long topic names for display
+  const shortenTopicName = (name) => {
+    const shortNames = {
+      'Dynamic Programming': 'DP',
+      'Breadth-First Search': 'BFS',
+      'Depth-First Search': 'DFS',
+      'Binary Search Tree': 'BST',
+    };
+    return shortNames[name] || name;
+  };
 
   // Topic colors
   const topicColors = [
@@ -72,7 +84,7 @@ function TopicsSlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your top skills
+          Your top skill
         </motion.div>
 
         {topTopic ? (
@@ -80,12 +92,12 @@ function TopicsSlide({ data }) {
             <motion.div
               style={{
                 fontFamily: 'Clash Display, sans-serif',
-                fontSize: 'clamp(2rem, 5vw, 2.5rem)',
+                fontSize: 'clamp(2.5rem, 6vw, 3.5rem)',
                 fontWeight: 700,
                 background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                marginBottom: '0.25rem',
+                marginBottom: '2rem',
                 textAlign: 'center',
               }}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -96,26 +108,13 @@ function TopicsSlide({ data }) {
             </motion.div>
 
             <motion.div
-              style={{ 
-                color: 'rgba(255, 255, 255, 0.6)',
-                marginBottom: '2rem',
-                fontSize: '0.95rem',
-                textAlign: 'center',
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              is your strongest skill ({topTopic.count.toLocaleString()} problems)
-            </motion.div>
-
-            <motion.div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.6rem',
                 width: '100%',
-                maxWidth: '500px',
+                maxWidth: '400px',
+                padding: '0 1rem',
               }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -172,7 +171,7 @@ function TopicsSlide({ data }) {
                           whiteSpace: 'nowrap',
                           color: '#fff',
                         }}>
-                          {topic.name}
+                          {shortenTopicName(topic.name)}
                         </span>
                         <span style={{ 
                           fontWeight: 700,
@@ -210,6 +209,7 @@ function TopicsSlide({ data }) {
           </motion.div>
         )}
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

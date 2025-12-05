@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import ShareButton from '../ShareButton';
 
-function TotalSolvedSlide({ data }) {
+function TotalSolvedSlide({ data, username, avatar }) {
   const [displayNumber, setDisplayNumber] = useState(0);
   
   const totalSolved = data.solved?.solvedProblem || 0;
@@ -121,6 +122,7 @@ function TotalSolvedSlide({ data }) {
           </div>
         </motion.div>
       </div>
+      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }
