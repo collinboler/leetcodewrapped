@@ -37,8 +37,14 @@ function CalendarSlide({ data }) {
     
     Object.entries(submissionMap).forEach(([timestamp, count]) => {
       const date = new Date(parseInt(timestamp) * 1000);
-      if (date.getFullYear() === YEAR) {
-        const dayKey = date.toISOString().split('T')[0];
+      // Use UTC to match LeetCode's timezone
+      if (date.getUTCFullYear() === YEAR) {
+        // Create UTC date key
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const dayKey = `${year}-${month}-${day}`;
+        
         daySubmissionMap[dayKey] = (daySubmissionMap[dayKey] || 0) + count;
         
         totalSubmissions += count;
@@ -49,7 +55,7 @@ function CalendarSlide({ data }) {
           activeDaysCount++;
         }
         
-        const monthIdx = date.getMonth();
+        const monthIdx = date.getUTCMonth();
         monthSubmissions[monthNames[monthIdx]] += count;
       }
     });
@@ -71,9 +77,9 @@ function CalendarSlide({ data }) {
       const numDays = daysInMonth[idx];
       const days = [];
       
-      // Get first day of month to know where to start
-      const firstDay = new Date(YEAR, idx, 1);
-      const startDayOfWeek = firstDay.getDay();
+      // Get first day of month to know where to start (use UTC)
+      const firstDay = new Date(Date.UTC(YEAR, idx, 1));
+      const startDayOfWeek = firstDay.getUTCDay();
       
       // Add empty cells for days before the month starts
       for (let i = 0; i < startDayOfWeek; i++) {
@@ -82,8 +88,10 @@ function CalendarSlide({ data }) {
       
       // Add actual days
       for (let d = 1; d <= numDays; d++) {
-        const date = new Date(YEAR, idx, d);
-        const dayKey = date.toISOString().split('T')[0];
+        // Create UTC date key
+        const month = String(idx + 1).padStart(2, '0');
+        const day = String(d).padStart(2, '0');
+        const dayKey = `${YEAR}-${month}-${day}`;
         const subs = daySubmissionMap[dayKey] || 0;
         
         let level = 0;
@@ -338,6 +346,7 @@ function CalendarSlide({ data }) {
                 </motion.div>
               ))}
             </motion.div>
+
           </>
         ) : (
           <motion.div

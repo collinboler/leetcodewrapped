@@ -6,8 +6,10 @@ import DifficultySlide from './slides/DifficultySlide';
 import TopicsSlide from './slides/TopicsSlide';
 import LanguageSlide from './slides/LanguageSlide';
 import StreakSlide from './slides/StreakSlide';
-import ContestSlide from './slides/ContestSlide';
 import CalendarSlide from './slides/CalendarSlide';
+import WeekdaySlide from './slides/WeekdaySlide';
+import BestDaySlide from './slides/BestDaySlide';
+import ContestSlide from './slides/ContestSlide';
 import BadgesSlide from './slides/BadgesSlide';
 import FinalSlide from './slides/FinalSlide';
 
@@ -22,6 +24,8 @@ function Wrapped({ data, username, onRestart }) {
     { component: LanguageSlide, props: { data } },
     { component: StreakSlide, props: { data } },
     { component: CalendarSlide, props: { data } },
+    { component: WeekdaySlide, props: { data } },
+    { component: BestDaySlide, props: { data } },
     { component: ContestSlide, props: { data } },
     { component: BadgesSlide, props: { data } },
     { component: FinalSlide, props: { data, username, onRestart } },
@@ -135,4 +139,3 @@ function Wrapped({ data, username, onRestart }) {
 }
 
 export default Wrapped;
-
