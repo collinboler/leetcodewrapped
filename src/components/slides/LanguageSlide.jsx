@@ -1,46 +1,19 @@
 import { motion } from 'framer-motion';
 
-const YEAR = 2025;
-
 function LanguageSlide({ data }) {
-  // Filter submissions to only include this year
-  const yearStart = new Date(YEAR, 0, 1).getTime() / 1000;
-  const yearEnd = new Date(YEAR, 11, 31, 23, 59, 59).getTime() / 1000;
-  
-  const submissions = data.submissions?.submission || [];
-  const thisYearSubmissions = submissions.filter(sub => {
-    const timestamp = parseInt(sub.timestamp);
-    return timestamp >= yearStart && timestamp <= yearEnd;
-  });
-  
-  // Extract language stats from this year's submissions
+  // Use language stats from API - this shows actual problems solved per language
   let languageStats = [];
   
-  if (thisYearSubmissions.length > 0) {
-    const langCount = {};
-    thisYearSubmissions.forEach(sub => {
-      if (sub.lang) {
-        langCount[sub.lang] = (langCount[sub.lang] || 0) + 1;
-      }
-    });
-    languageStats = Object.entries(langCount).map(([lang, count]) => ({
-      languageName: lang,
-      problemsSolved: count,
-    }));
+  // The API returns language stats in data.languageStats.data.matchedUser.languageProblemCount
+  if (data.languageStats?.data?.matchedUser?.languageProblemCount) {
+    languageStats = data.languageStats.data.matchedUser.languageProblemCount;
+  } else if (data.languageStats?.matchedUser?.languageProblemCount) {
+    languageStats = data.languageStats.matchedUser.languageProblemCount;
+  } else if (Array.isArray(data.languageStats)) {
+    languageStats = data.languageStats;
   }
   
-  // Fallback to all-time language stats if no submissions this year
-  if (languageStats.length === 0) {
-    if (data.languageStats?.matchedUser?.languageProblemCount) {
-      languageStats = data.languageStats.matchedUser.languageProblemCount;
-    } else if (data.languageStats?.languageProblemCount) {
-      languageStats = data.languageStats.languageProblemCount;
-    } else if (Array.isArray(data.languageStats)) {
-      languageStats = data.languageStats;
-    }
-  }
-  
-  // Sort by problem count - show ALL languages with at least 1 submission
+  // Sort by problem count - show ALL languages with at least 1 problem solved
   const sortedLanguages = [...languageStats]
     .filter(l => l.problemsSolved > 0)
     .sort((a, b) => b.problemsSolved - a.problemsSolved);
@@ -172,7 +145,8 @@ function LanguageSlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your {YEAR} weapon of choice
+          Your weapon of choice
+          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>(all-time)</span>
         </motion.div>
 
         {topLanguage ? (
@@ -228,7 +202,7 @@ function LanguageSlide({ data }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
             >
-              {topLanguage.problemsSolved} submissions
+              {topLanguage.problemsSolved} problems solved
             </motion.div>
 
             {/* Show ALL other languages */}
@@ -306,9 +280,9 @@ function LanguageSlide({ data }) {
             transition={{ delay: 0.5 }}
           >
             <div style={{ fontSize: '2rem', marginBottom: '1rem', fontFamily: 'monospace' }}>{'</>'}</div>
-            <div>No {YEAR} submissions found</div>
+            <div>No language data available</div>
             <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.7 }}>
-              Start solving to see your {YEAR} language stats!
+              Start solving to see your language stats!
             </div>
           </motion.div>
         )}

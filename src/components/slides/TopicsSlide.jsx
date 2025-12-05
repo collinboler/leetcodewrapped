@@ -1,67 +1,16 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
-const YEAR = 2025;
-
 function TopicsSlide({ data }) {
-  // Extract topic data from skill stats or submissions (filtered to current year)
+  // Extract topic data from skill stats (all-time data from LeetCode)
   const topicData = useMemo(() => {
     let topics = [];
     
-    const submissions = data.submissions?.submission || [];
+    // Use skill stats from API - this is the actual LeetCode data
+    const skillStats = data.skillStats;
     
-    // Filter submissions to only include this year
-    const yearStart = new Date(YEAR, 0, 1).getTime() / 1000;
-    const yearEnd = new Date(YEAR, 11, 31, 23, 59, 59).getTime() / 1000;
-    
-    const thisYearSubmissions = submissions.filter(sub => {
-      const timestamp = parseInt(sub.timestamp);
-      return timestamp >= yearStart && timestamp <= yearEnd;
-    });
-    
-    // Extract topics from submission titles
-    if (thisYearSubmissions.length > 0) {
-      const tagCount = {};
-      thisYearSubmissions.forEach(sub => {
-        if (sub.title) {
-          const patterns = {
-            'Array': /array|matrix|grid|subarray|nums|element/i,
-            'String': /string|substring|anagram|palindrome|character|letter/i,
-            'Tree': /tree|bst|binary tree|node|root|leaf/i,
-            'Graph': /graph|dfs|bfs|path|node|edge/i,
-            'Dynamic Programming': /dp|dynamic|fibonacci|climbing|house robber/i,
-            'Hash Table': /hash|map|set|duplicate|contain/i,
-            'Two Pointers': /pointer|two sum|three sum|container|water/i,
-            'Sliding Window': /window|sliding|maximum|minimum.*subarray/i,
-            'Sorting': /sort|merge|quick|order|arrange/i,
-            'Linked List': /linked|list|node|next|reverse/i,
-            'Stack': /stack|bracket|parenthes|valid/i,
-            'Queue': /queue|bfs|level order/i,
-            'Math': /math|number|digit|prime|factorial/i,
-            'Binary Search': /binary search|search|sorted|find/i,
-            'Backtracking': /backtrack|permutation|combination|subset/i,
-            'Recursion': /recurs|fibonacci|factorial/i,
-            'Greedy': /greedy|maximum|minimum|optimal/i,
-            'Heap': /heap|priority|kth largest|kth smallest/i,
-          };
-          
-          Object.entries(patterns).forEach(([topic, regex]) => {
-            if (regex.test(sub.title)) {
-              tagCount[topic] = (tagCount[topic] || 0) + 1;
-            }
-          });
-        }
-      });
-      
-      topics = Object.entries(tagCount).map(([name, count]) => ({
-        name,
-        count,
-      }));
-    }
-    
-    // If no submissions found for this year, try skill stats (all-time fallback)
-    if (topics.length === 0 && data.skillStats?.matchedUser?.tagProblemCounts) {
-      const tagCounts = data.skillStats.matchedUser.tagProblemCounts;
+    if (skillStats?.data?.matchedUser?.tagProblemCounts) {
+      const tagCounts = skillStats.data.matchedUser.tagProblemCounts;
       
       const allTags = {};
       ['fundamental', 'intermediate', 'advanced'].forEach(level => {
@@ -76,19 +25,20 @@ function TopicsSlide({ data }) {
         }
       });
       
-      topics = Object.entries(allTags).map(([name, count]) => ({
-        name,
-        count,
-      }));
+      topics = Object.entries(allTags)
+        .filter(([_, count]) => count > 0)
+        .map(([name, count]) => ({
+          name,
+          count,
+        }));
     }
     
     return topics.sort((a, b) => b.count - a.count);
   }, [data]);
 
-  // Get top 6 topics (1 featured + 5 others)
+  // Get top 6 topics
   const topTopics = topicData.slice(0, 6);
   const topTopic = topTopics[0];
-  const otherTopics = topTopics.slice(1, 6);
 
   // Topic colors
   const topicColors = [
@@ -126,7 +76,8 @@ function TopicsSlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your top topics in {YEAR}
+          Your top skills
+          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>(all-time)</span>
         </motion.div>
 
         {topTopic ? (
@@ -158,7 +109,7 @@ function TopicsSlide({ data }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              is your most practiced topic ({topTopic.count} submissions)
+              is your strongest skill ({topTopic.count} problems solved)
             </motion.div>
 
             {/* Show all 6 topics with bars */}
@@ -254,10 +205,10 @@ function TopicsSlide({ data }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <div style={{ fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 600 }}>No {YEAR} Data</div>
-            <div>No submissions found for {YEAR}</div>
+            <div style={{ fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 600 }}>No Skills Data</div>
+            <div>Skills data not available</div>
             <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.7 }}>
-              Start solving to see your topic breakdown!
+              Start solving to build your skills!
             </div>
           </motion.div>
         )}

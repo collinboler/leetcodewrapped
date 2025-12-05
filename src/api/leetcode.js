@@ -1,4 +1,4 @@
-const BASE_URL = 'https://alfa-leetcode-api.onrender.com';
+const BASE_URL = 'http://localhost:3000';
 
 export async function fetchUserProfile(username) {
   const response = await fetch(`${BASE_URL}/${username}`);
@@ -54,6 +54,7 @@ export async function fetchUserSkillStats(username) {
   return response.json();
 }
 
+// Fetch all data in parallel - no rate limiting needed for local API
 export async function fetchAllUserData(username) {
   const [profile, solved, badges, contest, contestHistory, calendar, submissions, languageStats, skillStats] = await Promise.allSettled([
     fetchUserProfile(username),
@@ -79,4 +80,3 @@ export async function fetchAllUserData(username) {
     skillStats: skillStats.status === 'fulfilled' ? skillStats.value : null,
   };
 }
-
