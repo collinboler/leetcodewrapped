@@ -11,13 +11,13 @@ function App() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (inputUsername) => {
+  const handleSubmit = async (inputUsername, sessionCookie = null) => {
     setError('');
     setUsername(inputUsername);
     setStage('loading');
 
     try {
-      const data = await fetchAllUserData(inputUsername);
+      const data = await fetchAllUserData(inputUsername, sessionCookie);
       
       if (!data.profile || data.profile.errors) {
         throw new Error('User not found');
@@ -65,4 +65,3 @@ function App() {
 }
 
 export default App;
-

@@ -9,6 +9,7 @@ import StreakSlide from './slides/StreakSlide';
 import CalendarSlide from './slides/CalendarSlide';
 import WeekdaySlide from './slides/WeekdaySlide';
 import BestDaySlide from './slides/BestDaySlide';
+import ProblemsSlide from './slides/ProblemsSlide';
 import ContestSlide from './slides/ContestSlide';
 import BadgesSlide from './slides/BadgesSlide';
 import FinalSlide from './slides/FinalSlide';
@@ -23,6 +24,7 @@ function Wrapped({ data, username, onRestart }) {
     { component: StreakSlide, props: { data } },       // Active days in 2025
     { component: CalendarSlide, props: { data } },     // Best month
     { component: BestDaySlide, props: { data } },      // Most productive day
+    { component: ProblemsSlide, props: { data } },     // Most retried, problem insights
     // Then the rest
     { component: TotalSolvedSlide, props: { data } },
     { component: DifficultySlide, props: { data } },

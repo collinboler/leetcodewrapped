@@ -42,6 +42,20 @@ export async function fetchUserSubmissions(username, limit = 100) {
   return response.json();
 }
 
+// Fetch ALL submissions with authentication (requires session cookie)
+export async function fetchAllSubmissions(sessionCookie) {
+  const response = await fetch(`${BASE_URL}/submissions/all`, {
+    headers: {
+      'x-leetcode-session': sessionCookie,
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to fetch all submissions');
+  }
+  return response.json();
+}
+
 export async function fetchUserLanguageStats(username) {
   const response = await fetch(`${BASE_URL}/${username}/language`);
   if (!response.ok) throw new Error('Failed to fetch language stats');
@@ -55,17 +69,26 @@ export async function fetchUserSkillStats(username) {
 }
 
 // Fetch all data in parallel - no rate limiting needed for local API
-export async function fetchAllUserData(username) {
-  const [profile, solved, badges, contest, contestHistory, calendar, submissions, languageStats, skillStats] = await Promise.allSettled([
+export async function fetchAllUserData(username, sessionCookie = null) {
+  const basePromises = [
     fetchUserProfile(username),
     fetchUserSolved(username),
     fetchUserBadges(username),
     fetchUserContest(username),
     fetchUserContestHistory(username),
     fetchUserCalendar(username),
-    fetchUserSubmissions(username, 5000),
     fetchUserLanguageStats(username),
     fetchUserSkillStats(username),
+  ];
+
+  // If session cookie provided, fetch ALL submissions; otherwise just last 20
+  const submissionsPromise = sessionCookie 
+    ? fetchAllSubmissions(sessionCookie)
+    : fetchUserSubmissions(username, 20);
+
+  const [profile, solved, badges, contest, contestHistory, calendar, languageStats, skillStats, submissions] = await Promise.allSettled([
+    ...basePromises,
+    submissionsPromise,
   ]);
 
   return {
