@@ -35,7 +35,7 @@ function IntroSlide({ username, data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          Welcome,
+          Welcome
         </motion.h1>
 
         <motion.div 
@@ -53,7 +53,7 @@ function IntroSlide({ username, data }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          Let's see what you accomplished in 2025
+         Your 2025 LeetCode Journey
         </motion.p>
 
         <motion.div
@@ -66,7 +66,7 @@ function IntroSlide({ username, data }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
         >
-          Press → or swipe to continue
+   
         </motion.div>
       </div>
     </motion.div>
