@@ -40,13 +40,13 @@ function LanguageSlide({ data }) {
     }
   }
   
-  // Sort by problem count and get top languages
+  // Sort by problem count - show ALL languages with at least 1 submission
   const sortedLanguages = [...languageStats]
     .filter(l => l.problemsSolved > 0)
-    .sort((a, b) => b.problemsSolved - a.problemsSolved)
-    .slice(0, 6);
+    .sort((a, b) => b.problemsSolved - a.problemsSolved);
 
   const topLanguage = sortedLanguages[0];
+  const otherLanguages = sortedLanguages.slice(1);
 
   // Devicon mapping for official language icons
   const languageIcons = {
@@ -222,34 +222,48 @@ function LanguageSlide({ data }) {
             <motion.div
               style={{ 
                 color: 'rgba(255, 255, 255, 0.6)',
-                marginBottom: '2.5rem',
+                marginBottom: '2rem',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
             >
-              {topLanguage.problemsSolved} problems solved
+              {topLanguage.problemsSolved} submissions
             </motion.div>
 
-            {sortedLanguages.length > 1 && (
+            {/* Show ALL other languages */}
+            {otherLanguages.length > 0 && (
               <motion.div 
-                className="language-chart"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                  width: '100%',
+                  maxWidth: '400px',
+                  maxHeight: '180px',
+                  overflowY: 'auto',
+                }}
               >
-                {sortedLanguages.slice(1).map((lang, index) => (
+                {otherLanguages.map((lang, index) => (
                   <motion.div 
                     key={lang.languageName}
-                    className="language-item"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.1 + index * 0.1 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1 + index * 0.05 }}
                     style={{
-                      borderColor: languageColors[lang.languageName] || 'rgba(255, 255, 255, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.5rem 0.75rem',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '8px',
+                      borderLeft: `3px solid ${languageColors[lang.languageName] || '#666'}`,
                     }}
                   >
-                    <div className="language-name" style={{ 
+                    <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '0.5rem',
@@ -262,15 +276,17 @@ function LanguageSlide({ data }) {
                           onError={(e) => e.target.style.display = 'none'}
                         />
                       )}
-                      {formatLangName(lang.languageName)}
+                      <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.9rem' }}>
+                        {formatLangName(lang.languageName)}
+                      </span>
                     </div>
-                    <div className="language-count" style={{ 
-                      background: `linear-gradient(135deg, ${languageColors[lang.languageName] || '#4facfe'}, ${languageColors[lang.languageName] || '#00f2fe'})`,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                    <span style={{ 
+                      fontWeight: 700,
+                      fontSize: '0.95rem',
+                      color: languageColors[lang.languageName] || '#4facfe',
                     }}>
                       {lang.problemsSolved}
-                    </div>
+                    </span>
                   </motion.div>
                 ))}
               </motion.div>

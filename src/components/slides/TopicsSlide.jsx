@@ -8,7 +8,6 @@ function TopicsSlide({ data }) {
   const topicData = useMemo(() => {
     let topics = [];
     
-    // Try to get from skillStats first (this is all-time, but we'll try submissions first for year-specific)
     const submissions = data.submissions?.submission || [];
     
     // Filter submissions to only include this year
@@ -42,6 +41,8 @@ function TopicsSlide({ data }) {
             'Binary Search': /binary search|search|sorted|find/i,
             'Backtracking': /backtrack|permutation|combination|subset/i,
             'Recursion': /recurs|fibonacci|factorial/i,
+            'Greedy': /greedy|maximum|minimum|optimal/i,
+            'Heap': /heap|priority|kth largest|kth smallest/i,
           };
           
           Object.entries(patterns).forEach(([topic, regex]) => {
@@ -84,8 +85,10 @@ function TopicsSlide({ data }) {
     return topics.sort((a, b) => b.count - a.count);
   }, [data]);
 
-  const topTopics = topicData.slice(0, 5);
+  // Get top 6 topics (1 featured + 5 others)
+  const topTopics = topicData.slice(0, 6);
   const topTopic = topTopics[0];
+  const otherTopics = topTopics.slice(1, 6);
 
   // Topic colors
   const topicColors = [
@@ -94,6 +97,7 @@ function TopicsSlide({ data }) {
     '#45B7D1',
     '#96CEB4',
     '#DDA0DD',
+    '#F7DC6F',
   ];
 
   return (
@@ -116,7 +120,7 @@ function TopicsSlide({ data }) {
           style={{ 
             fontSize: '1.3rem', 
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '2rem',
+            marginBottom: '1.5rem',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,12 +134,12 @@ function TopicsSlide({ data }) {
             <motion.div
               style={{
                 fontFamily: 'Clash Display, sans-serif',
-                fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+                fontSize: 'clamp(2rem, 5vw, 2.5rem)',
                 fontWeight: 700,
                 background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                marginBottom: '0.5rem',
+                marginBottom: '0.25rem',
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -147,7 +151,8 @@ function TopicsSlide({ data }) {
             <motion.div
               style={{ 
                 color: 'rgba(255, 255, 255, 0.6)',
-                marginBottom: '3rem',
+                marginBottom: '1.5rem',
+                fontSize: '0.95rem',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -156,86 +161,85 @@ function TopicsSlide({ data }) {
               is your most practiced topic ({topTopic.count} submissions)
             </motion.div>
 
-            {topTopics.length > 1 && (
-              <motion.div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  width: '100%',
-                  maxWidth: '500px',
-                }}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-              >
-                {topTopics.map((topic, index) => (
-                  <motion.div
-                    key={topic.name}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                    }}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.9 + index * 0.1 }}
-                  >
+            {/* Show all 6 topics with bars */}
+            <motion.div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.6rem',
+                width: '100%',
+                maxWidth: '500px',
+              }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              {topTopics.map((topic, index) => (
+                <motion.div
+                  key={topic.name}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                  }}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9 + index * 0.08 }}
+                >
+                  <div style={{
+                    width: '22px',
+                    textAlign: 'center',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: topicColors[index],
+                  }}>
+                    #{index + 1}
+                  </div>
+                  <div style={{ flex: 1 }}>
                     <div style={{
-                      width: '24px',
-                      textAlign: 'center',
-                      fontSize: '0.9rem',
-                      fontWeight: 700,
-                      color: topicColors[index],
+                      height: '28px',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      borderRadius: '14px',
+                      overflow: 'hidden',
                     }}>
-                      #{index + 1}
+                      <motion.div
+                        style={{
+                          height: '100%',
+                          background: `linear-gradient(90deg, ${topicColors[index]}, ${topicColors[index]}88)`,
+                          borderRadius: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0 0.65rem',
+                          minWidth: 'fit-content',
+                        }}
+                        initial={{ width: 0 }}
+                        animate={{ 
+                          width: `${Math.max((topic.count / topTopic.count) * 100, 30)}%` 
+                        }}
+                        transition={{ duration: 0.8, delay: 1 + index * 0.08 }}
+                      >
+                        <span style={{ 
+                          fontWeight: 600, 
+                          fontSize: '0.75rem',
+                          whiteSpace: 'nowrap',
+                          color: '#fff',
+                        }}>
+                          {topic.name}
+                        </span>
+                        <span style={{ 
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          color: '#fff',
+                        }}>
+                          {topic.count}
+                        </span>
+                      </motion.div>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        height: '36px',
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        borderRadius: '18px',
-                        overflow: 'hidden',
-                      }}>
-                        <motion.div
-                          style={{
-                            height: '100%',
-                            background: `linear-gradient(90deg, ${topicColors[index]}, ${topicColors[index]}88)`,
-                            borderRadius: '18px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '0 1rem',
-                            minWidth: 'fit-content',
-                          }}
-                          initial={{ width: 0 }}
-                          animate={{ 
-                            width: `${Math.max((topic.count / topTopic.count) * 100, 35)}%` 
-                          }}
-                          transition={{ duration: 0.8, delay: 1 + index * 0.1 }}
-                        >
-                          <span style={{ 
-                            fontWeight: 600, 
-                            fontSize: '0.85rem',
-                            whiteSpace: 'nowrap',
-                            color: '#fff',
-                          }}>
-                            {topic.name}
-                          </span>
-                          <span style={{ 
-                            fontWeight: 700,
-                            fontSize: '0.9rem',
-                            color: '#fff',
-                          }}>
-                            {topic.count}
-                          </span>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </>
         ) : (
           <motion.div
