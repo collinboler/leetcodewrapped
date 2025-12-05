@@ -1,14 +1,11 @@
 import { motion } from 'framer-motion';
 
 function LanguageSlide({ data }) {
-  // Use language stats from API - this shows actual problems solved per language
+  // The API returns language stats as {languageProblemCount: [...]}
   let languageStats = [];
   
-  // The API returns language stats in data.languageStats.data.matchedUser.languageProblemCount
-  if (data.languageStats?.data?.matchedUser?.languageProblemCount) {
-    languageStats = data.languageStats.data.matchedUser.languageProblemCount;
-  } else if (data.languageStats?.matchedUser?.languageProblemCount) {
-    languageStats = data.languageStats.matchedUser.languageProblemCount;
+  if (data.languageStats?.languageProblemCount) {
+    languageStats = data.languageStats.languageProblemCount;
   } else if (Array.isArray(data.languageStats)) {
     languageStats = data.languageStats;
   }

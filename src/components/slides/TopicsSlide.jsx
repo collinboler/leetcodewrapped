@@ -6,16 +6,15 @@ function TopicsSlide({ data }) {
   const topicData = useMemo(() => {
     let topics = [];
     
-    // Use skill stats from API - this is the actual LeetCode data
+    // The API returns skill stats directly as {fundamental: [], intermediate: [], advanced: []}
     const skillStats = data.skillStats;
     
-    if (skillStats?.data?.matchedUser?.tagProblemCounts) {
-      const tagCounts = skillStats.data.matchedUser.tagProblemCounts;
-      
+    if (skillStats) {
       const allTags = {};
+      
       ['fundamental', 'intermediate', 'advanced'].forEach(level => {
-        if (tagCounts[level]) {
-          tagCounts[level].forEach(tag => {
+        if (skillStats[level] && Array.isArray(skillStats[level])) {
+          skillStats[level].forEach(tag => {
             if (allTags[tag.tagName]) {
               allTags[tag.tagName] += tag.problemsSolved;
             } else {
