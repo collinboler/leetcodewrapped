@@ -633,6 +633,11 @@ body {
   margin-top: 0.25rem;
 }
 
+/* temporarily hide share button */
+.share-button-container {
+  visibility: hidden !important;
+}
+
 .share-section {
   margin-top: 2rem;
 }
