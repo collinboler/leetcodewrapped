@@ -84,10 +84,25 @@ async function fetchProblemDetailsForSlugs(titleSlugs) {
 }
 
 // Fetch ALL submissions with authentication (requires session cookie)
-// Uses parallel pagination for speed
+// Uses parallel pagination for speed, and starts fetching problem details immediately
 export async function fetchAllSubmissions(sessionCookie, totalNeeded) {
   const limit = 20; // LeetCode caps at 20 per request
   const numPages = Math.ceil(totalNeeded / limit);
+  
+  // Track unique slugs and their problem detail promises
+  const seenSlugs = new Set();
+  const problemDetailPromises = new Map(); // slug -> Promise
+  
+  // Function to start fetching problem details for new slugs
+  const queueProblemDetails = (submissions) => {
+    submissions.forEach(sub => {
+      if (sub.statusDisplay === 'Accepted' && sub.titleSlug && !seenSlugs.has(sub.titleSlug)) {
+        seenSlugs.add(sub.titleSlug);
+        // Start fetching immediately
+        problemDetailPromises.set(sub.titleSlug, fetchProblemDetails(sub.titleSlug));
+      }
+    });
+  };
   
   // Create all page requests in parallel
   const pagePromises = [];
@@ -98,7 +113,15 @@ export async function fetchAllSubmissions(sessionCookie, totalNeeded) {
         headers: {
           'x-leetcode-session': sessionCookie,
         },
-      }).then(res => res.ok ? res.json() : null)
+      })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        // As soon as we get submissions, start fetching their problem details
+        if (data?.submissions) {
+          queueProblemDetails(data.submissions);
+        }
+        return data;
+      })
     );
   }
   
@@ -113,7 +136,25 @@ export async function fetchAllSubmissions(sessionCookie, totalNeeded) {
     }
   });
 
-  return { submission: allSubmissions, count: allSubmissions.length };
+  // Wait for all problem details (they've been fetching in parallel this whole time)
+  const problemDetails = new Map();
+  const detailResults = await Promise.all(
+    Array.from(problemDetailPromises.entries()).map(async ([slug, promise]) => {
+      const details = await promise;
+      return [slug, details];
+    })
+  );
+  detailResults.forEach(([slug, details]) => {
+    if (details) {
+      problemDetails.set(slug, details);
+    }
+  });
+
+  return { 
+    submission: allSubmissions, 
+    count: allSubmissions.length,
+    problemDetails, // Include pre-fetched problem details
+  };
 }
 
 // Calculate total submissions in a year from calendar data
@@ -142,7 +183,7 @@ function getYearSubmissionCount(calendarData, year) {
 }
 
 // Process submissions to get 2025 stats
-async function process2025Submissions(submissions) {
+function process2025Submissions(submissions, prefetchedProblemDetails = null) {
   const YEAR = 2025;
   
   // Filter to 2025 submissions only
@@ -170,10 +211,9 @@ async function process2025Submissions(submissions) {
     }
   });
 
-  // Fetch problem details for all unique accepted problems (difficulty + tags)
-  const uniqueSlugs = Array.from(acceptedProblems.keys());
-  console.log(`Fetching problem details for ${uniqueSlugs.length} problems...`);
-  const problemDetails = await fetchProblemDetailsForSlugs(uniqueSlugs);
+  // Use pre-fetched problem details (already fetched in parallel with submissions)
+  const problemDetails = prefetchedProblemDetails || new Map();
+  console.log(`Using ${problemDetails.size} pre-fetched problem details`);
 
   // Calculate difficulty breakdown for 2025
   const difficulty2025 = { easy: 0, medium: 0, hard: 0 };
@@ -300,8 +340,8 @@ export async function fetchAllUserData(username, sessionCookie = null) {
       const allSubs = await fetchAllSubmissions(sessionCookie, totalSubmissions2025);
       submissions = allSubs;
       
-      // Process to get 2025-specific stats (now async)
-      yearlyStats = await process2025Submissions(allSubs.submission);
+      // Process to get 2025-specific stats (problem details already pre-fetched!)
+      yearlyStats = process2025Submissions(allSubs.submission, allSubs.problemDetails);
       console.log(`Processed ${yearlyStats.uniqueProblemsSolved} unique problems solved in ${YEAR}`);
     } catch (e) {
       console.error('Failed to fetch authenticated submissions:', e);
