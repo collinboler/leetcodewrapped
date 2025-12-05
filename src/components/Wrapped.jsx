@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GithubButton } from './GithubButton';
 import IntroSlide from './slides/IntroSlide';
 import TotalSolvedSlide from './slides/TotalSolvedSlide';
 import DifficultySlide from './slides/DifficultySlide';
@@ -136,6 +137,22 @@ function Wrapped({ data, username, onRestart }) {
         }}>
           2025
         </span>
+      </motion.div>
+
+      {/* GitHub Star Button */}
+      <motion.div
+        className="github-star-btn"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <GithubButton
+          separator={true}
+          label=""
+          roundStars={true}
+          repoUrl="https://github.com/collinboler/leetcodewrapped"
+          variant="outline"
+        />
       </motion.div>
 
       <AnimatePresence mode="wait">

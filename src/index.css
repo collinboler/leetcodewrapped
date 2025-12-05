@@ -746,6 +746,20 @@ body {
   background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
 }
 
+/* GitHub Star Button */
+.github-star-btn {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .github-star-btn {
+    display: none;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .slide {
