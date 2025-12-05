@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
+const YEAR = 2025;
+
 function TopicsSlide({ data }) {
-  // Extract topic data from skill stats (all-time data from LeetCode)
-  const topicData = useMemo(() => {
+  // Extract all-time topic data from skill stats
+  const allTimeTopics = useMemo(() => {
     let topics = [];
-    
-    // The API returns skill stats directly as {fundamental: [], intermediate: [], advanced: []}
     const skillStats = data.skillStats;
     
     if (skillStats) {
@@ -26,18 +26,20 @@ function TopicsSlide({ data }) {
       
       topics = Object.entries(allTags)
         .filter(([_, count]) => count > 0)
-        .map(([name, count]) => ({
-          name,
-          count,
-        }));
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
     }
     
-    return topics.sort((a, b) => b.count - a.count);
-  }, [data]);
+    return topics;
+  }, [data.skillStats]);
 
-  // Get top 6 topics
-  const topTopics = topicData.slice(0, 6);
-  const topTopic = topTopics[0];
+  // Get 2025 topics from yearlyStats (if available)
+  const yearTopics = data.yearlyStats?.topics2025 || [];
+  const hasYearlyData = yearTopics.length > 0;
+
+  // Get top 6 for each
+  const topAllTime = allTimeTopics.slice(0, 6);
+  const topYear = yearTopics.slice(0, 6);
 
   // Topic colors
   const topicColors = [
@@ -48,6 +50,9 @@ function TopicsSlide({ data }) {
     '#DDA0DD',
     '#F7DC6F',
   ];
+
+  // Get the top topic for display
+  const topTopic = hasYearlyData && topYear.length > 0 ? topYear[0] : topAllTime[0];
 
   return (
     <motion.div 
@@ -69,7 +74,7 @@ function TopicsSlide({ data }) {
           style={{ 
             fontSize: '1.3rem', 
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '1.5rem',
+            marginBottom: '1rem',
             textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
@@ -77,7 +82,6 @@ function TopicsSlide({ data }) {
           transition={{ delay: 0.2 }}
         >
           Your top skills
-          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>(all-time)</span>
         </motion.div>
 
         {topTopic ? (
@@ -111,88 +115,283 @@ function TopicsSlide({ data }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              is your strongest skill ({topTopic.count.toLocaleString()} problems solved)
+              is your strongest skill ({topTopic.count.toLocaleString()} problems{hasYearlyData ? ` in ${YEAR}` : ''})
             </motion.div>
 
-            {/* Show all 6 topics with bars */}
-            <motion.div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.6rem',
-                width: '100%',
-                maxWidth: '500px',
-              }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              {topTopics.map((topic, index) => (
+            {hasYearlyData ? (
+              // Side-by-side view
+              <div style={{ 
+                display: 'flex', 
+                gap: '1.5rem', 
+                width: '100%', 
+                maxWidth: '700px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}>
+                {/* 2025 Topics */}
                 <motion.div
-                  key={topic.name}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                  }}
+                  style={{ flex: '1', minWidth: '280px', maxWidth: '320px' }}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.9 + index * 0.08 }}
+                  transition={{ delay: 0.8 }}
                 >
                   <div style={{
-                    width: '22px',
+                    fontSize: '0.9rem',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    marginBottom: '0.75rem',
                     textAlign: 'center',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: topicColors[index],
+                    fontWeight: 600,
                   }}>
-                    #{index + 1}
+                    {YEAR}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      height: '28px',
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      borderRadius: '14px',
-                      overflow: 'hidden',
-                    }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {topYear.map((topic, index) => (
                       <motion.div
+                        key={`year-${topic.name}`}
                         style={{
-                          height: '100%',
-                          background: `linear-gradient(90deg, ${topicColors[index]}, ${topicColors[index]}88)`,
-                          borderRadius: '14px',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0 0.65rem',
-                          minWidth: 'fit-content',
+                          gap: '0.5rem',
                         }}
-                        initial={{ width: 0 }}
-                        animate={{ 
-                          width: `${Math.max((topic.count / topTopic.count) * 100, 30)}%` 
-                        }}
-                        transition={{ duration: 0.8, delay: 1 + index * 0.08 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.9 + index * 0.06 }}
                       >
-                        <span style={{ 
-                          fontWeight: 600, 
-                          fontSize: '0.75rem',
-                          whiteSpace: 'nowrap',
-                          color: '#fff',
-                        }}>
-                          {topic.name}
-                        </span>
-                        <span style={{ 
+                        <div style={{
+                          width: '18px',
+                          textAlign: 'center',
+                          fontSize: '0.7rem',
                           fontWeight: 700,
-                          fontSize: '0.8rem',
-                          color: '#fff',
+                          color: topicColors[index],
                         }}>
-                          {topic.count.toLocaleString()}
-                        </span>
+                          #{index + 1}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{
+                            height: '24px',
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                          }}>
+                            <motion.div
+                              style={{
+                                height: '100%',
+                                background: `linear-gradient(90deg, ${topicColors[index]}, ${topicColors[index]}88)`,
+                                borderRadius: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '0 0.5rem',
+                                minWidth: 'fit-content',
+                              }}
+                              initial={{ width: 0 }}
+                              animate={{ 
+                                width: `${Math.max((topic.count / topYear[0].count) * 100, 35)}%` 
+                              }}
+                              transition={{ duration: 0.6, delay: 1 + index * 0.06 }}
+                            >
+                              <span style={{ 
+                                fontWeight: 600, 
+                                fontSize: '0.65rem',
+                                whiteSpace: 'nowrap',
+                                color: '#fff',
+                              }}>
+                                {topic.name}
+                              </span>
+                              <span style={{ 
+                                fontWeight: 700,
+                                fontSize: '0.7rem',
+                                color: '#fff',
+                              }}>
+                                {topic.count}
+                              </span>
+                            </motion.div>
+                          </div>
+                        </div>
                       </motion.div>
-                    </div>
+                    ))}
                   </div>
                 </motion.div>
-              ))}
-            </motion.div>
+
+                {/* All-time Topics */}
+                <motion.div
+                  style={{ flex: '1', minWidth: '280px', maxWidth: '320px' }}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    marginBottom: '0.75rem',
+                    textAlign: 'center',
+                    fontWeight: 600,
+                  }}>
+                    All-time
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {topAllTime.map((topic, index) => (
+                      <motion.div
+                        key={`alltime-${topic.name}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.9 + index * 0.06 }}
+                      >
+                        <div style={{
+                          width: '18px',
+                          textAlign: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          color: `${topicColors[index]}88`,
+                        }}>
+                          #{index + 1}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{
+                            height: '24px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                          }}>
+                            <motion.div
+                              style={{
+                                height: '100%',
+                                background: `linear-gradient(90deg, ${topicColors[index]}66, ${topicColors[index]}44)`,
+                                borderRadius: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '0 0.5rem',
+                                minWidth: 'fit-content',
+                              }}
+                              initial={{ width: 0 }}
+                              animate={{ 
+                                width: `${Math.max((topic.count / topAllTime[0].count) * 100, 35)}%` 
+                              }}
+                              transition={{ duration: 0.6, delay: 1.1 + index * 0.06 }}
+                            >
+                              <span style={{ 
+                                fontWeight: 600, 
+                                fontSize: '0.65rem',
+                                whiteSpace: 'nowrap',
+                                color: 'rgba(255,255,255,0.8)',
+                              }}>
+                                {topic.name}
+                              </span>
+                              <span style={{ 
+                                fontWeight: 700,
+                                fontSize: '0.7rem',
+                                color: 'rgba(255,255,255,0.8)',
+                              }}>
+                                {topic.count}
+                              </span>
+                            </motion.div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            ) : (
+              // All-time only
+              <motion.div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.6rem',
+                  width: '100%',
+                  maxWidth: '500px',
+                }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                {topAllTime.map((topic, index) => (
+                  <motion.div
+                    key={topic.name}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                    }}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 + index * 0.08 }}
+                  >
+                    <div style={{
+                      width: '22px',
+                      textAlign: 'center',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      color: topicColors[index],
+                    }}>
+                      #{index + 1}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{
+                        height: '28px',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        borderRadius: '14px',
+                        overflow: 'hidden',
+                      }}>
+                        <motion.div
+                          style={{
+                            height: '100%',
+                            background: `linear-gradient(90deg, ${topicColors[index]}, ${topicColors[index]}88)`,
+                            borderRadius: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0 0.65rem',
+                            minWidth: 'fit-content',
+                          }}
+                          initial={{ width: 0 }}
+                          animate={{ 
+                            width: `${Math.max((topic.count / topAllTime[0].count) * 100, 30)}%` 
+                          }}
+                          transition={{ duration: 0.8, delay: 1 + index * 0.08 }}
+                        >
+                          <span style={{ 
+                            fontWeight: 600, 
+                            fontSize: '0.75rem',
+                            whiteSpace: 'nowrap',
+                            color: '#fff',
+                          }}>
+                            {topic.name}
+                          </span>
+                          <span style={{ 
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            color: '#fff',
+                          }}>
+                            {topic.count.toLocaleString()}
+                          </span>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+                <motion.div
+                  style={{ 
+                    textAlign: 'center', 
+                    marginTop: '0.5rem', 
+                    fontSize: '0.8rem', 
+                    color: 'rgba(255,255,255,0.5)' 
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.5 }}
+                >
+                  (all-time)
+                </motion.div>
+              </motion.div>
+            )}
           </>
         ) : (
           <motion.div

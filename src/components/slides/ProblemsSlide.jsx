@@ -1,8 +1,23 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
+const YEAR = 2025;
+
 function ProblemsSlide({ data }) {
-  const { mostRetried, mostSubmissions, uniqueProblems, totalAttempts } = useMemo(() => {
+  // Use yearlyStats if available (authenticated), otherwise fall back to basic processing
+  const { mostRetried, mostSubmissions, uniqueProblems, totalAttempts, hasFullData } = useMemo(() => {
+    // Check if we have full yearly stats from authenticated fetch
+    if (data.yearlyStats) {
+      return {
+        mostRetried: data.yearlyStats.mostRetried,
+        mostSubmissions: data.yearlyStats.topProblemsByAttempts,
+        uniqueProblems: data.yearlyStats.uniqueProblemsSolved,
+        totalAttempts: data.yearlyStats.totalSubmissions,
+        hasFullData: true,
+      };
+    }
+
+    // Fallback: process from submissions (limited data)
     const submissions = data.submissions?.submission || [];
     
     if (!submissions.length) {
@@ -11,68 +26,71 @@ function ProblemsSlide({ data }) {
         mostSubmissions: null,
         uniqueProblems: 0,
         totalAttempts: 0,
+        hasFullData: false,
       };
     }
+
+    // Filter to current year
+    const submissions2025 = submissions.filter(sub => {
+      const date = new Date(parseInt(sub.timestamp) * 1000);
+      return date.getUTCFullYear() === YEAR;
+    });
 
     // Group submissions by problem
     const problemStats = {};
     let uniqueSet = new Set();
 
-    submissions.forEach(sub => {
-      const date = new Date(parseInt(sub.timestamp) * 1000);
+    submissions2025.forEach(sub => {
       uniqueSet.add(sub.titleSlug);
 
       if (!problemStats[sub.titleSlug]) {
         problemStats[sub.titleSlug] = {
           title: sub.title,
           titleSlug: sub.titleSlug,
-          totalAttempts: 0,
-          wrongAnswers: 0,
-          accepted: false,
+          totalSubmissions: 0,
           attemptsBeforeAccept: 0,
-          firstAttempt: date,
-          lastAttempt: date,
+          accepted: false,
         };
       }
 
       const problem = problemStats[sub.titleSlug];
-      problem.totalAttempts++;
+      problem.totalSubmissions++;
       
       if (sub.statusDisplay === 'Accepted') {
         if (!problem.accepted) {
-          problem.attemptsBeforeAccept = problem.totalAttempts - 1;
+          problem.attemptsBeforeAccept = problem.totalSubmissions - 1;
         }
         problem.accepted = true;
-      } else if (sub.statusDisplay === 'Wrong Answer' || sub.statusDisplay === 'Runtime Error' || sub.statusDisplay === 'Time Limit Exceeded') {
-        problem.wrongAnswers++;
       }
-      
-      // Track first/last attempts
-      if (date < problem.firstAttempt) problem.firstAttempt = date;
-      if (date > problem.lastAttempt) problem.lastAttempt = date;
     });
 
     const problemList = Object.values(problemStats);
 
-    // Most retried: problem with most attempts before finally getting Accepted
+    // Most retried
     const retriedProblems = problemList
       .filter(p => p.accepted && p.attemptsBeforeAccept > 0)
       .sort((a, b) => b.attemptsBeforeAccept - a.attemptsBeforeAccept);
 
-    // Most submissions overall
+    // Most submissions
     const mostSubmissionsProblems = [...problemList]
-      .sort((a, b) => b.totalAttempts - a.totalAttempts);
+      .sort((a, b) => b.totalSubmissions - a.totalSubmissions);
 
     return {
-      mostRetried: retriedProblems[0] || null,
+      mostRetried: retriedProblems[0] ? {
+        title: retriedProblems[0].title,
+        titleSlug: retriedProblems[0].titleSlug,
+        retriesBeforeAccept: retriedProblems[0].attemptsBeforeAccept,
+      } : null,
       mostSubmissions: mostSubmissionsProblems.slice(0, 5),
       uniqueProblems: uniqueSet.size,
-      totalAttempts: submissions.length,
+      totalAttempts: submissions2025.length,
+      hasFullData: false,
     };
-  }, [data.submissions]);
+  }, [data.yearlyStats, data.submissions]);
 
   // Format problem name for display (truncate if too long)
   const formatProblemName = (name) => {
+    if (!name) return '';
     if (name.length > 30) return name.substring(0, 27) + '...';
     return name;
   };
@@ -104,14 +122,67 @@ function ProblemsSlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Recent problem insights
-          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>(last 20 submissions)</span>
+          Your {YEAR} problem insights
+          {!hasFullData && (
+            <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>
+              (limited data - add session cookie for full stats)
+            </span>
+          )}
         </motion.div>
 
-        {mostSubmissions && mostSubmissions.length > 0 ? (
+        {(mostSubmissions && mostSubmissions.length > 0) || uniqueProblems > 0 ? (
           <>
+            {/* Stats Row */}
+            <motion.div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                marginBottom: '1.5rem',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: '12px',
+                padding: '1rem 1.5rem',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: 700, color: '#10b981' }}>
+                  {uniqueProblems}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                  Problems Solved
+                </div>
+                <div style={{ fontSize: '0.65rem', color: 'rgba(255, 255, 255, 0.3)' }}>
+                  in {YEAR}
+                </div>
+              </div>
+              <div style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                borderRadius: '12px',
+                padding: '1rem 1.5rem',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: 700, color: '#f59e0b' }}>
+                  {totalAttempts}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                  Total Submissions
+                </div>
+                <div style={{ fontSize: '0.65rem', color: 'rgba(255, 255, 255, 0.3)' }}>
+                  in {YEAR}
+                </div>
+              </div>
+            </motion.div>
+
             {/* Most Retried Problem */}
-            {mostRetried && (
+            {mostRetried && mostRetried.retriesBeforeAccept > 0 && (
               <motion.div
                 style={{
                   background: 'rgba(147, 51, 234, 0.15)',
@@ -125,7 +196,7 @@ function ProblemsSlide({ data }) {
                 }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.6 }}
               >
                 <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.5)', marginBottom: '0.5rem' }}>
                   Your most retried problem
@@ -140,51 +211,10 @@ function ProblemsSlide({ data }) {
                   {formatProblemName(mostRetried.title)}
                 </div>
                 <div style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                  <span style={{ color: '#ec4899', fontWeight: 700 }}>{mostRetried.attemptsBeforeAccept}</span> attempts before you cracked it
+                  <span style={{ color: '#ec4899', fontWeight: 700 }}>{mostRetried.retriesBeforeAccept}</span> attempts before you cracked it
                 </div>
               </motion.div>
             )}
-
-            {/* Stats Row */}
-            <motion.div
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: '1rem 1.5rem',
-                textAlign: 'center',
-              }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981' }}>
-                  {uniqueProblems}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
-                  Unique Problems
-                </div>
-              </div>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                padding: '1rem 1.5rem',
-                textAlign: 'center',
-              }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b' }}>
-                  {totalAttempts}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
-                  Total Attempts
-                </div>
-              </div>
-            </motion.div>
 
             {/* Most Submissions List */}
             {mostSubmissions && mostSubmissions.length > 0 && (
@@ -247,7 +277,7 @@ function ProblemsSlide({ data }) {
                         fontWeight: 700,
                         color: index === 0 ? '#ec4899' : '#a78bfa',
                       }}>
-                        {problem.totalAttempts}
+                        {problem.totalSubmissions}
                       </span>
                     </motion.div>
                   ))}
@@ -268,7 +298,7 @@ function ProblemsSlide({ data }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No submission data</div>
+            <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No {YEAR} submission data</div>
             <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>
               Keep solving to see your problem insights!
             </div>
@@ -280,4 +310,3 @@ function ProblemsSlide({ data }) {
 }
 
 export default ProblemsSlide;
-

@@ -1,10 +1,16 @@
 import { motion } from 'framer-motion';
 
+const YEAR = 2025;
+
 function LanguageSlide({ data }) {
-  // The API returns language stats as {languageProblemCount: [...]}
+  // Prefer 2025 stats if available (authenticated), otherwise use all-time
   let languageStats = [];
+  let isYearlyData = false;
   
-  if (data.languageStats?.languageProblemCount) {
+  if (data.yearlyStats?.languageStats2025?.languageProblemCount?.length > 0) {
+    languageStats = data.yearlyStats.languageStats2025.languageProblemCount;
+    isYearlyData = true;
+  } else if (data.languageStats?.languageProblemCount) {
     languageStats = data.languageStats.languageProblemCount;
   } else if (Array.isArray(data.languageStats)) {
     languageStats = data.languageStats;
@@ -103,7 +109,9 @@ function LanguageSlide({ data }) {
           transition={{ delay: 0.2 }}
         >
           Your weapon of choice
-          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>(all-time)</span>
+          <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>
+            ({isYearlyData ? `${YEAR} only` : 'all-time'})
+          </span>
         </motion.div>
 
         {topLanguage ? (
@@ -152,6 +160,7 @@ function LanguageSlide({ data }) {
               transition={{ delay: 0.8 }}
             >
               {topLanguage.problemsSolved.toLocaleString()} problems solved
+              {isYearlyData && <span style={{ opacity: 0.7 }}> in {YEAR}</span>}
             </motion.div>
 
             {/* Bar graph for top 5 languages */}
