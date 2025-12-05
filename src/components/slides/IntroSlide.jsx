@@ -35,7 +35,7 @@ function IntroSlide({ username, data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          Welcome back,
+          Welcome,
         </motion.h1>
 
         <motion.div 

@@ -1,65 +1,114 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState, useMemo } from 'react';
 
+const YEAR = 2025;
+
 function StreakSlide({ data }) {
   const [displayDays, setDisplayDays] = useState(0);
   
-  // Calculate 2024-specific active days and longest streak
-  const { activeDays2024, longestStreak2024 } = useMemo(() => {
+  // Calculate 2025-specific active days, longest streak, and current streak
+  const { activeDays2025, longestStreak2025, currentStreak } = useMemo(() => {
     const calendarData = data.calendar?.submissionCalendar || '{}';
     let submissionMap = {};
     try {
       submissionMap = JSON.parse(calendarData);
     } catch (e) {
-      return { activeDays2024: 0, longestStreak2024: 0 };
+      return { activeDays2025: 0, longestStreak2025: 0, currentStreak: 0 };
     }
     
-    // Get all 2024 dates with submissions
-    const dates2024 = [];
+    // Get all dates with submissions (using UTC to match LeetCode)
+    const datesWithSubmissions = new Set();
     Object.entries(submissionMap).forEach(([timestamp, count]) => {
       const date = new Date(parseInt(timestamp) * 1000);
-      if (date.getFullYear() === 2025 && count > 0) {
-        dates2024.push(date);
+      if (date.getUTCFullYear() === YEAR && count > 0) {
+        // Create UTC date string
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        datesWithSubmissions.add(`${year}-${month}-${day}`);
       }
     });
     
-    // Sort dates
-    dates2024.sort((a, b) => a - b);
+    // Convert to sorted array
+    const sortedDates = Array.from(datesWithSubmissions).sort();
     
-    // Calculate longest streak in 2024
-    let longest = 0;
+    if (sortedDates.length === 0) {
+      return { activeDays2025: 0, longestStreak2025: 0, currentStreak: 0 };
+    }
+    
+    // Calculate longest streak
+    let longest = 1;
     let current = 1;
     
-    for (let i = 1; i < dates2024.length; i++) {
-      const prevDate = dates2024[i - 1];
-      const currDate = dates2024[i];
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prevDate = new Date(sortedDates[i - 1] + 'T00:00:00Z');
+      const currDate = new Date(sortedDates[i] + 'T00:00:00Z');
       const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
       
       if (diffDays === 1) {
         current++;
-      } else {
         longest = Math.max(longest, current);
+      } else {
         current = 1;
       }
     }
     longest = Math.max(longest, current);
     
+    // Calculate current streak
+    // LeetCode resets at 8pm EST (which is 00:00 UTC next day, or 01:00 UTC during DST)
+    // For simplicity, we use UTC midnight as the reset time
+    const now = new Date();
+    const todayUTC = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
+    
+    // Yesterday UTC
+    const yesterday = new Date(now);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    const yesterdayUTC = `${yesterday.getUTCFullYear()}-${String(yesterday.getUTCMonth() + 1).padStart(2, '0')}-${String(yesterday.getUTCDate()).padStart(2, '0')}`;
+    
+    // Check if today or yesterday has submissions (streak is still active)
+    const hasToday = datesWithSubmissions.has(todayUTC);
+    const hasYesterday = datesWithSubmissions.has(yesterdayUTC);
+    
+    let currentStreakCount = 0;
+    
+    if (hasToday || hasYesterday) {
+      // Start from the most recent date with submission
+      const startDate = hasToday ? todayUTC : yesterdayUTC;
+      currentStreakCount = 1;
+      
+      // Count backwards
+      let checkDate = new Date(startDate + 'T00:00:00Z');
+      checkDate.setUTCDate(checkDate.getUTCDate() - 1);
+      
+      while (true) {
+        const checkDateStr = `${checkDate.getUTCFullYear()}-${String(checkDate.getUTCMonth() + 1).padStart(2, '0')}-${String(checkDate.getUTCDate()).padStart(2, '0')}`;
+        
+        if (datesWithSubmissions.has(checkDateStr)) {
+          currentStreakCount++;
+          checkDate.setUTCDate(checkDate.getUTCDate() - 1);
+        } else {
+          break;
+        }
+      }
+    }
+    
     return {
-      activeDays2024: dates2024.length,
-      longestStreak2024: dates2024.length > 0 ? longest : 0,
+      activeDays2025: sortedDates.length,
+      longestStreak2025: longest,
+      currentStreak: currentStreakCount,
     };
   }, [data.calendar]);
 
   useEffect(() => {
     const duration = 1500;
     const steps = 40;
-    const increment = activeDays2024 / steps;
+    const increment = activeDays2025 / steps;
     let current = 0;
     
     const timer = setInterval(() => {
       current += increment;
-      if (current >= activeDays2024) {
-        setDisplayDays(activeDays2024);
+      if (current >= activeDays2025) {
+        setDisplayDays(activeDays2025);
         clearInterval(timer);
       } else {
         setDisplayDays(Math.floor(current));
@@ -67,15 +116,15 @@ function StreakSlide({ data }) {
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [activeDays2024]);
+  }, [activeDays2025]);
 
   // Determine streak message
   const getStreakMessage = () => {
-    if (activeDays2024 >= 300) return "Legendary! Almost every day of 2025!";
-    if (activeDays2024 >= 200) return "Incredible dedication — 200+ days!";
-    if (activeDays2024 >= 100) return "Triple digits! A true grinder.";
-    if (activeDays2024 >= 50) return "50+ days of coding excellence.";
-    if (activeDays2024 >= 1) return "Every day counts. Keep it up!";
+    if (activeDays2025 >= 300) return `Legendary! Almost every day of ${YEAR}!`;
+    if (activeDays2025 >= 200) return "Incredible dedication — 200+ days!";
+    if (activeDays2025 >= 100) return "Triple digits! A true grinder.";
+    if (activeDays2025 >= 50) return "50+ days of coding excellence.";
+    if (activeDays2025 >= 1) return "Every day counts. Keep it up!";
     return "Start your journey today!";
   };
 
@@ -87,18 +136,19 @@ function StreakSlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
           style={{ 
             fontSize: '1.3rem', 
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '2rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Your 2025 activity
+          Your {YEAR} activity
         </motion.div>
 
         <motion.div 
@@ -116,7 +166,7 @@ function StreakSlide({ data }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          active day{activeDays2024 !== 1 ? 's' : ''} in 2025
+          active day{activeDays2025 !== 1 ? 's' : ''} in {YEAR}
         </motion.div>
 
         <motion.div
@@ -124,6 +174,7 @@ function StreakSlide({ data }) {
             color: 'rgba(255, 255, 255, 0.6)',
             marginTop: '1rem',
             fontSize: '1.1rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -158,14 +209,14 @@ function StreakSlide({ data }) {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              {longestStreak2024}
+              {longestStreak2025}
             </div>
             <div style={{ 
               fontSize: '0.9rem', 
               color: 'rgba(255, 255, 255, 0.6)',
               marginTop: '0.25rem',
             }}>
-              Longest Streak in 2025
+              Longest Streak in {YEAR}
             </div>
           </div>
 
@@ -179,11 +230,13 @@ function StreakSlide({ data }) {
             <div style={{ 
               fontSize: '2rem', 
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              background: currentStreak > 0 
+                ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                : 'linear-gradient(135deg, #666 0%, #888 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              {data.profile?.streak || 0}
+              {currentStreak}
             </div>
             <div style={{ 
               fontSize: '0.9rem', 

@@ -23,12 +23,13 @@ function DifficultySlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.h2
           style={{ 
             fontSize: 'clamp(1.5rem, 4vw, 2rem)',
             fontWeight: 600,
             marginBottom: '0.5rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

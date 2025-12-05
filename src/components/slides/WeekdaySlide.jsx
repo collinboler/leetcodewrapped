@@ -53,10 +53,9 @@ function WeekdaySlide({ data }) {
     };
   }, [calendarData]);
 
-  // Day colors (weekend vs weekday)
-  const getDayColor = (dayName, isMax) => {
+  // Day colors - all same except max
+  const getDayColor = (isMax) => {
     if (isMax) return '#40C4A9';
-    if (dayName === 'Saturday' || dayName === 'Sunday') return '#FF6B6B';
     return '#4facfe';
   };
 
@@ -77,12 +76,13 @@ function WeekdaySlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
           style={{ 
             fontSize: '1.2rem', 
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,6 +102,7 @@ function WeekdaySlide({ data }) {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '0.5rem',
+                textAlign: 'center',
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -115,15 +116,16 @@ function WeekdaySlide({ data }) {
                 color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '2rem',
                 fontSize: '1rem',
+                textAlign: 'center',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              {dayStats.find(d => d.isMax)?.submissions} submissions on {mostActiveDay}s
+              {dayStats.find(d => d.isMax)?.submissions.toLocaleString()} submissions on {mostActiveDay}s
             </motion.div>
 
-            {/* Weekly bar chart */}
+            {/* Weekly bar chart - centered */}
             <motion.div
               style={{
                 display: 'flex',
@@ -134,6 +136,7 @@ function WeekdaySlide({ data }) {
                 width: '100%',
                 maxWidth: '450px',
                 padding: '0 1rem',
+                margin: '0 auto',
               }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -158,7 +161,7 @@ function WeekdaySlide({ data }) {
                       maxWidth: '40px',
                       background: day.isMax 
                         ? 'linear-gradient(180deg, #40C4A9, #2d8f7a)' 
-                        : `linear-gradient(180deg, ${getDayColor(day.name, false)}88, ${getDayColor(day.name, false)}44)`,
+                        : `linear-gradient(180deg, ${getDayColor(false)}88, ${getDayColor(false)}44)`,
                       borderRadius: '4px 4px 0 0',
                       boxShadow: day.isMax ? '0 0 20px rgba(64, 196, 169, 0.4)' : 'none',
                     }}
@@ -181,7 +184,7 @@ function WeekdaySlide({ data }) {
                     color: day.isMax ? '#40C4A9' : 'rgba(255, 255, 255, 0.4)',
                     marginTop: '0.2rem',
                   }}>
-                    {day.submissions}
+                    {day.submissions.toLocaleString()}
                   </div>
                 </motion.div>
               ))}
@@ -194,6 +197,7 @@ function WeekdaySlide({ data }) {
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '16px',
+              textAlign: 'center',
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -209,4 +213,3 @@ function WeekdaySlide({ data }) {
 }
 
 export default WeekdaySlide;
-

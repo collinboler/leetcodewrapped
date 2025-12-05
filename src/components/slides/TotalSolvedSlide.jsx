@@ -5,8 +5,13 @@ function TotalSolvedSlide({ data }) {
   const [displayNumber, setDisplayNumber] = useState(0);
   
   const totalSolved = data.solved?.solvedProblem || 0;
-  const totalQuestions = data.solved?.totalQuestions || 3000;
-  const percentile = ((totalSolved / totalQuestions) * 100).toFixed(1);
+  // Use the actual total from API, which is more accurate
+  const totalQuestions = data.solved?.totalQuestions || 3500;
+  
+  // Calculate percentage, cap at 100% for display
+  const rawPercentile = (totalSolved / totalQuestions) * 100;
+  const percentile = Math.min(rawPercentile, 100).toFixed(1);
+  const solvedAll = totalSolved >= totalQuestions;
 
   // Animate the number counting up
   useEffect(() => {
@@ -36,7 +41,7 @@ function TotalSolvedSlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -45,6 +50,7 @@ function TotalSolvedSlide({ data }) {
             fontSize: '1.5rem', 
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1rem',
+            textAlign: 'center',
           }}
         >
           You solved
@@ -56,7 +62,7 @@ function TotalSolvedSlide({ data }) {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", duration: 0.8, delay: 0.4 }}
         >
-          {displayNumber}
+          {displayNumber.toLocaleString()}
         </motion.div>
 
         <motion.div 
@@ -64,6 +70,7 @@ function TotalSolvedSlide({ data }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
+          style={{ textAlign: 'center' }}
         >
           problems on LeetCode
           <span style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.5rem', opacity: 0.6 }}>(all-time)</span>
@@ -74,8 +81,13 @@ function TotalSolvedSlide({ data }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
+          style={{ textAlign: 'center' }}
         >
-          That's {percentile}% of all available problems
+          {solvedAll ? (
+            <>You've solved ALL available problems!</>
+          ) : (
+            <>That's {percentile}% of all available problems</>
+          )}
         </motion.div>
 
         <motion.div
@@ -88,6 +100,7 @@ function TotalSolvedSlide({ data }) {
             background: 'rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             backdropFilter: 'blur(10px)',
+            textAlign: 'center',
           }}
         >
           <div style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.5)' }}>
@@ -108,4 +121,3 @@ function TotalSolvedSlide({ data }) {
 }
 
 export default TotalSolvedSlide;
-

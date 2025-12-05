@@ -93,12 +93,13 @@ function BestDaySlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
           style={{ 
             fontSize: '1.2rem', 
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1.5rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,6 +144,7 @@ function BestDaySlide({ data }) {
                 color: 'rgba(255, 255, 255, 0.5)',
                 marginBottom: '1.5rem',
                 fontSize: '1rem',
+                textAlign: 'center',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

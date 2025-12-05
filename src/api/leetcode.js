@@ -63,7 +63,7 @@ export async function fetchAllUserData(username) {
     fetchUserContest(username),
     fetchUserContestHistory(username),
     fetchUserCalendar(username),
-    fetchUserSubmissions(username, 500),
+    fetchUserSubmissions(username, 5000),
     fetchUserLanguageStats(username),
     fetchUserSkillStats(username),
   ]);

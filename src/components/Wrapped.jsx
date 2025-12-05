@@ -18,14 +18,16 @@ function Wrapped({ data, username, onRestart }) {
   
   const slides = [
     { component: IntroSlide, props: { username, data } },
+    // Activity slides first
+    { component: WeekdaySlide, props: { data } },      // Favorite weekday
+    { component: StreakSlide, props: { data } },       // Active days in 2025
+    { component: CalendarSlide, props: { data } },     // Best month
+    { component: BestDaySlide, props: { data } },      // Most productive day
+    // Then the rest
     { component: TotalSolvedSlide, props: { data } },
     { component: DifficultySlide, props: { data } },
     { component: TopicsSlide, props: { data } },
     { component: LanguageSlide, props: { data } },
-    { component: StreakSlide, props: { data } },
-    { component: CalendarSlide, props: { data } },
-    { component: WeekdaySlide, props: { data } },
-    { component: BestDaySlide, props: { data } },
     { component: ContestSlide, props: { data } },
     { component: BadgesSlide, props: { data } },
     { component: FinalSlide, props: { data, username, onRestart } },

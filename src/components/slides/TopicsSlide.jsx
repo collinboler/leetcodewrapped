@@ -64,12 +64,13 @@ function TopicsSlide({ data }) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content">
+      <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
           style={{ 
             fontSize: '1.3rem', 
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1.5rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -90,6 +91,7 @@ function TopicsSlide({ data }) {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '0.25rem',
+                textAlign: 'center',
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -103,12 +105,13 @@ function TopicsSlide({ data }) {
                 color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '1.5rem',
                 fontSize: '0.95rem',
+                textAlign: 'center',
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              is your strongest skill ({topTopic.count} problems solved)
+              is your strongest skill ({topTopic.count.toLocaleString()} problems solved)
             </motion.div>
 
             {/* Show all 6 topics with bars */}
@@ -182,7 +185,7 @@ function TopicsSlide({ data }) {
                           fontSize: '0.8rem',
                           color: '#fff',
                         }}>
-                          {topic.count}
+                          {topic.count.toLocaleString()}
                         </span>
                       </motion.div>
                     </div>
@@ -199,6 +202,7 @@ function TopicsSlide({ data }) {
               background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '16px',
               marginTop: '2rem',
+              textAlign: 'center',
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
