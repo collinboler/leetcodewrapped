@@ -49,7 +49,7 @@ function Loading({ username }) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        @{username}
+        u/{username}
       </motion.div>
     </motion.div>
   );

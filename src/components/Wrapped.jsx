@@ -29,7 +29,7 @@ function Wrapped({ data, username, onRestart }) {
     { component: TopicsSlide, props: { data, username, avatar } },
     { component: LanguageSlide, props: { data, username, avatar } },
     { component: BadgesSlide, props: { data, username, avatar } },
-    { component: FinalSlide, props: { data, username, avatar, onRestart } },
+    { component: FinalSlide, props: { data, username, avatar } },
   ];
 
   const goToSlide = useCallback((index) => {
@@ -120,16 +120,14 @@ function Wrapped({ data, username, onRestart }) {
       >
         <img 
           src="/leetcodewrapped.png" 
-          alt="LeetCode Wrapped" 
+          alt="leetcode wrapped" 
           style={{ width: '48px', height: '48px' }}
         />
-        <span style={{ 
-          fontFamily: 'Clash Display, sans-serif',
-          fontSize: '1.4rem', 
-          fontWeight: 700, 
-          color: '#FFA116' 
-        }}>
-          LeetCode Wrapped
+        <span style={{ fontFamily: 'Clash Display, sans-serif', fontSize: '1.4rem', fontWeight: 700 }}>
+          <span style={{ color: '#fea216' }}>leet</span>
+          <span style={{ color: '#b3b3b3' }}>code</span>
+          {' '}
+          <span style={{ color: '#f32426', fontStyle: 'italic' }}>wrapped</span>
         </span>
         <span style={{ 
           fontSize: '1.4rem', 

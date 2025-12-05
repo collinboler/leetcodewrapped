@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
 
-function ShareButton({ username, avatar }) {
+function ShareButton({ username, avatar, inline = false }) {
   const handleShare = async () => {
     const slideElement = document.querySelector('.slide');
     if (!slideElement) return;
@@ -22,6 +22,75 @@ function ShareButton({ username, avatar }) {
       if (navButtons) navButtons.style.visibility = 'hidden';
       if (indicators) indicators.style.visibility = 'hidden';
       if (header) header.style.visibility = 'hidden';
+
+      // Pre-convert external images to data URLs to avoid CORS issues
+      const externalImages = slideElement.querySelectorAll('img[src^="http"]');
+      const convertedImages = [];
+      
+      for (const img of externalImages) {
+        const originalSrc = img.src;
+        img.setAttribute('data-original-src', originalSrc);
+        
+        try {
+          // Try fetching with CORS
+          const response = await fetch(originalSrc, { 
+            mode: 'cors',
+            headers: { 'Accept': 'image/*' }
+          });
+          const blob = await response.blob();
+          const dataUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+          if (dataUrl) {
+            img.src = dataUrl;
+            convertedImages.push(img);
+            continue;
+          }
+        } catch (e) {
+          // CORS fetch failed, continue to fallback
+        }
+        
+        // Fallback: create a colored placeholder based on language
+        const langName = img.alt?.toLowerCase() || '';
+        const langColors = {
+          'java': '#ED8B00',
+          'python': '#3776AB',
+          'javascript': '#F7DF1E',
+          'typescript': '#3178C6',
+          'c++': '#00599C',
+          'c': '#A8B9CC',
+          'go': '#00ADD8',
+          'rust': '#DEA584',
+          'mysql': '#4479A1',
+          'bash': '#4EAA25',
+        };
+        const color = langColors[langName] || '#888';
+        
+        // Create a simple colored square as placeholder
+        const size = img.width || img.height || 32;
+        const placeholderCanvas = document.createElement('canvas');
+        placeholderCanvas.width = size;
+        placeholderCanvas.height = size;
+        const pCtx = placeholderCanvas.getContext('2d');
+        pCtx.fillStyle = color;
+        pCtx.beginPath();
+        pCtx.roundRect(0, 0, size, size, size * 0.2);
+        pCtx.fill();
+        
+        // Add first letter
+        pCtx.fillStyle = '#fff';
+        pCtx.font = `bold ${size * 0.5}px system-ui`;
+        pCtx.textAlign = 'center';
+        pCtx.textBaseline = 'middle';
+        const letter = langName.charAt(0).toUpperCase() || '?';
+        pCtx.fillText(letter, size/2, size/2);
+        
+        img.src = placeholderCanvas.toDataURL('image/png');
+        convertedImages.push(img);
+      }
 
       const canvas = await html2canvas(slideElement, {
         backgroundColor: '#0A0A0A',
@@ -66,6 +135,15 @@ function ShareButton({ username, avatar }) {
         }
       });
 
+      // Restore original image sources
+      convertedImages.forEach((img) => {
+        const originalSrc = img.getAttribute('data-original-src');
+        if (originalSrc) {
+          img.src = originalSrc;
+          img.removeAttribute('data-original-src');
+        }
+      });
+
       const finalCanvas = document.createElement('canvas');
       const ctx = finalCanvas.getContext('2d');
       
@@ -83,25 +161,54 @@ function ShareButton({ username, avatar }) {
       });
 
       // Always use mobile-style layout
-      // LeetCode Wrapped 2025 text centered at top
-      ctx.fillStyle = '#FFA116';
+      // leetcode wrapped 2025 text centered at top - with colors
+      const centerX = finalCanvas.width / 2;
+      ctx.textAlign = 'left';
+      
+      // Measure text parts
       ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('LeetCode Wrapped 2025', finalCanvas.width / 2, 70);
+      const leetWidth = ctx.measureText('leet').width;
+      const codeWidth = ctx.measureText('code').width;
+      const spaceWidth = ctx.measureText(' ').width;
+      ctx.font = 'italic bold 56px system-ui, -apple-system, sans-serif';
+      const wrappedWidth = ctx.measureText('wrapped').width;
+      ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+      const yearWidth = ctx.measureText(' 2025').width;
+      const textTotalWidth = leetWidth + codeWidth + spaceWidth + wrappedWidth + yearWidth;
+      const startX = centerX - textTotalWidth / 2;
+      
+      let currentX = startX;
+      ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = '#fea216';
+      ctx.fillText('leet', currentX, 70);
+      currentX += leetWidth;
+      
+      ctx.fillStyle = '#b3b3b3';
+      ctx.fillText('code', currentX, 70);
+      currentX += codeWidth + spaceWidth;
+      
+      ctx.font = 'italic bold 56px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = '#f32426';
+      ctx.fillText('wrapped', currentX, 70);
+      currentX += wrappedWidth;
+      
+      ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.fillText(' 2025', currentX, 70);
 
       // Big logo below text
-      const logoSize = 150;
+      const logoSize = 180;
       if (logoImg.complete && logoImg.naturalWidth > 0) {
         ctx.drawImage(logoImg, (finalCanvas.width - logoSize) / 2, 95, logoSize, logoSize);
       }
 
       // Profile pic and username on same line - centered
       const profileSize = 50;
-      const usernameText = `@${username}`;
+      const usernameText = `u/${username}`;
       ctx.font = 'bold 44px system-ui';
       const usernameWidth = ctx.measureText(usernameText).width;
-      const totalWidth = profileSize + 15 + usernameWidth;
-      const startX = (finalCanvas.width - totalWidth) / 2;
+      const bottomTotalWidth = profileSize + 15 + usernameWidth;
+      const profileStartX = (finalCanvas.width - bottomTotalWidth) / 2;
       const profileY = finalCanvas.height - 130;
       
       if (avatar) {
@@ -116,33 +223,52 @@ function ShareButton({ username, avatar }) {
           
           ctx.save();
           ctx.beginPath();
-          ctx.arc(startX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
+          ctx.arc(profileStartX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
           ctx.closePath();
           ctx.clip();
-          ctx.drawImage(img, startX, profileY, profileSize, profileSize);
+          ctx.drawImage(img, profileStartX, profileY, profileSize, profileSize);
           ctx.restore();
-          
-          ctx.strokeStyle = '#FFA116';
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(startX + profileSize/2, profileY + profileSize/2, profileSize/2, 0, Math.PI * 2);
-          ctx.stroke();
         } catch (e) {
-          drawInitialCircle(ctx, startX, profileY, profileSize, username);
+          drawInitialCircle(ctx, profileStartX, profileY, profileSize, username);
         }
       } else {
-        drawInitialCircle(ctx, startX, profileY, profileSize, username);
+        drawInitialCircle(ctx, profileStartX, profileY, profileSize, username);
       }
 
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 44px system-ui';
       ctx.textAlign = 'left';
-      ctx.fillText(usernameText, startX + profileSize + 15, profileY + profileSize/2 + 15);
+      ctx.fillText(usernameText, profileStartX + profileSize + 15, profileY + profileSize/2 + 15);
 
-      ctx.fillStyle = '#FFA116';
+      // leetcodewrapped.com with colored text
       ctx.font = 'bold 44px system-ui';
-      ctx.textAlign = 'center';
-      ctx.fillText('leetcodewrapped.com', finalCanvas.width / 2, finalCanvas.height - 45);
+      ctx.textAlign = 'left';
+      const leetW = ctx.measureText('leet').width;
+      const codeW = ctx.measureText('code').width;
+      ctx.font = 'italic bold 44px system-ui';
+      const wrappedW = ctx.measureText('wrapped').width;
+      ctx.font = 'bold 44px system-ui';
+      const dotComW = ctx.measureText('.com').width;
+      const linkTotalWidth = leetW + codeW + wrappedW + dotComW;
+      const linkStartX = (finalCanvas.width - linkTotalWidth) / 2;
+      
+      let linkX = linkStartX;
+      ctx.fillStyle = '#fea216';
+      ctx.fillText('leet', linkX, finalCanvas.height - 45);
+      linkX += leetW;
+      
+      ctx.fillStyle = '#b3b3b3';
+      ctx.fillText('code', linkX, finalCanvas.height - 45);
+      linkX += codeW;
+      
+      ctx.font = 'italic bold 44px system-ui';
+      ctx.fillStyle = '#f32426';
+      ctx.fillText('wrapped', linkX, finalCanvas.height - 45);
+      linkX += wrappedW;
+      
+      ctx.font = 'bold 44px system-ui';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.fillText('.com', linkX, finalCanvas.height - 45);
 
       if (shareBtn) shareBtn.style.visibility = 'visible';
       if (navButtons) navButtons.style.visibility = 'visible';
@@ -154,7 +280,7 @@ function ShareButton({ username, avatar }) {
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            await navigator.share({ files: [file], title: 'LeetCode Wrapped 2025' });
+            await navigator.share({ files: [file], title: 'leetcode wrapped 2025' });
             return;
           } catch (err) {}
         }
@@ -195,46 +321,46 @@ function ShareButton({ username, avatar }) {
     <motion.div
       className="share-button-container"
       style={{
-        position: 'absolute',
-        bottom: '100px',
-        left: 0,
-        right: 0,
+        position: inline ? 'relative' : 'absolute',
+        bottom: inline ? 'auto' : '100px',
+        left: inline ? 'auto' : 0,
+        right: inline ? 'auto' : 0,
         zIndex: 100,
         display: 'flex',
         justifyContent: 'center',
-        pointerEvents: 'none',
+        pointerEvents: inline ? 'auto' : 'none',
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.5 }}
+      transition={{ delay: inline ? 0 : 1.5 }}
     >
       <button
         onClick={handleShare}
         style={{
-          background: 'rgba(255, 161, 22, 0.15)',
-          border: '1px solid rgba(255, 161, 22, 0.3)',
-          borderRadius: '24px',
-          padding: '0.6rem 1.5rem',
-          color: '#FFA116',
-          fontSize: '0.85rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          borderRadius: '20px',
+          padding: '0.5rem 1.2rem',
+          color: 'rgba(255, 255, 255, 0.9)',
+          fontSize: '0.75rem',
           fontWeight: 600,
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem',
+          gap: '0.4rem',
           transition: 'all 0.2s ease',
           pointerEvents: 'auto',
         }}
         onMouseEnter={(e) => {
-          e.target.style.background = 'rgba(255, 161, 22, 0.25)';
+          e.target.style.background = 'rgba(255, 255, 255, 0.2)';
           e.target.style.transform = 'scale(1.05)';
         }}
         onMouseLeave={(e) => {
-          e.target.style.background = 'rgba(255, 161, 22, 0.15)';
+          e.target.style.background = 'rgba(255, 255, 255, 0.1)';
           e.target.style.transform = 'scale(1)';
         }}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
           <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
         </svg>
         Share

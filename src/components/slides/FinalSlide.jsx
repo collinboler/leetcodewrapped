@@ -18,7 +18,7 @@ const languageIcons = {
   'rust': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-plain.svg',
 };
 
-function FinalSlide({ data, username, avatar, onRestart }) {
+function FinalSlide({ data, username, avatar }) {
   const easy = data.solved?.easySolved || 0;
   const medium = data.solved?.mediumSolved || 0;
   const hard = data.solved?.hardSolved || 0;
@@ -253,15 +253,14 @@ function FinalSlide({ data, username, avatar, onRestart }) {
           </div>
         </motion.div>
 
-        <motion.div 
-          style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}
+        {/* Share button inline */}
+        <motion.div
+          style={{ marginTop: '1.5rem' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
         >
-          <button className="restart-btn" onClick={onRestart} style={{ fontSize: '0.9rem', padding: '0.75rem 1.5rem' }}>
-            Try Another
-          </button>
+          <ShareButton username={username} avatar={avatar} inline={true} />
         </motion.div>
 
         <motion.div
@@ -277,7 +276,6 @@ function FinalSlide({ data, username, avatar, onRestart }) {
           {' '}for the LeetCode community
         </motion.div>
       </div>
-      <ShareButton username={username} avatar={avatar} />
     </motion.div>
   );
 }

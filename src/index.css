@@ -82,7 +82,6 @@ body {
 .logo {
   width: 160px;
   height: 160px;
-  filter: drop-shadow(0 0 30px rgba(255, 161, 22, 0.5));
 }
 
 .landing h1 {
@@ -138,7 +137,6 @@ body {
   outline: none;
   border-color: var(--lc-orange);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 30px rgba(255, 161, 22, 0.2);
 }
 
 .username-input::placeholder {

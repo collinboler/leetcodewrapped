@@ -252,7 +252,7 @@ function CalendarSlide({ data, username, avatar }) {
                       fontSize: '0.4rem',
                       fontWeight: 500,
                     }}>
-                      ↑ Featured
+
                     </div>
                   ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px' }}>
