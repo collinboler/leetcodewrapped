@@ -6,7 +6,7 @@ import { doc, setDoc, updateDoc, serverTimestamp, increment } from 'firebase/fir
  * @param {string} username - The username searched
  */
 export async function saveUserSearch(username) {
-    if (!username) return;
+    if (!username || !db) return;
 
     const normalizedUsername = username.toLowerCase();
     const userRef = doc(db, 'users', normalizedUsername);
@@ -31,7 +31,7 @@ export async function saveUserSearch(username) {
  * @param {string} email - The email address
  */
 export async function updateUserEmail(username, email) {
-    if (!username || !email) return;
+    if (!username || !email || !db) return;
 
     const normalizedUsername = username.toLowerCase();
     const userRef = doc(db, 'users', normalizedUsername);

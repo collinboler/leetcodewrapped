@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAnalytics } from './hooks/useAnalytics';
 import { AnimatePresence } from 'framer-motion';
 import Landing from './components/Landing';
 import Loading from './components/Loading';
@@ -11,6 +12,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
+  const posthog = useAnalytics();
 
   const handleSubmit = async (inputUsername) => {
     setError('');
@@ -26,6 +28,8 @@ function App() {
 
       setUserData(data);
       saveUserSearch(inputUsername);
+      posthog.identify(inputUsername);
+      posthog.capture('user_search', { username: inputUsername });
       setStage('wrapped');
     } catch (err) {
       setError(err.message || 'Failed to fetch user data');

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import ShareButton from '../ShareButton';
 import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
@@ -143,6 +144,7 @@ function FinalSlide({ data, username, avatar }) {
 
   const langIcon = stats.topLanguage ? languageIcons[stats.topLanguage.toLowerCase()] : null;
 
+  const posthog = useAnalytics();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
@@ -178,6 +180,7 @@ function FinalSlide({ data, username, avatar }) {
       `;
 
       await updateUserEmail(username, email);
+      posthog.capture('email_submitted', { username, email });
 
       await addDoc(collection(db, 'mail'), {
         to: email,

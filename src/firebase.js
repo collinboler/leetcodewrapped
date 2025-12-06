@@ -18,17 +18,23 @@ const firebaseConfig = {
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
+let app = null;
+let analytics = null;
+let db = null;
 
-// Initialize App Check
-// This will only work if VITE_RECAPTCHA_SITE_KEY is set
-if (import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
-    isTokenAutoRefreshEnabled: true
-  });
+if (firebaseConfig.apiKey) {
+  app = initializeApp(firebaseConfig);
+  analytics = getAnalytics(app);
+  db = getFirestore(app);
+
+  // Initialize App Check
+  // This will only work if VITE_RECAPTCHA_SITE_KEY is set
+  if (import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+      isTokenAutoRefreshEnabled: true
+    });
+  }
 }
 
 export { app, analytics, db };
