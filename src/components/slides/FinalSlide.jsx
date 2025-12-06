@@ -343,7 +343,7 @@ function FinalSlide({ data, username, avatar }) {
               }}>
                 <input
                   type="email"
-                  placeholder="enter email"
+                  placeholder="zuck@meta.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
