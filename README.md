@@ -2,6 +2,8 @@
 
 a "spotify wrapped" style recap for your leetcode journey.
 
+deployed at [leetcodewrapped.com](https://leetcodewrapped.com)
+
 ## quick start
 
 1.  **install dependencies:**
