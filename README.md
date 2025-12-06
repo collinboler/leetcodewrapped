@@ -11,9 +11,9 @@ deployed at [leetcodewrapped.com](https://leetcodewrapped.com)
     npm install
     ```
 
-2.  **run locally:**
+3.  **run locally:**
     ```bash
-    npm run dev
+    npm run start
     ```
 
 3.  **build for production:**

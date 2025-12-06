@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "npm run build && npx wrangler pages dev dist",
     "build": "vite build",
     "preview": "vite preview"
   },
