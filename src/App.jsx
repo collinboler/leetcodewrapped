@@ -4,6 +4,7 @@ import Landing from './components/Landing';
 import Loading from './components/Loading';
 import Wrapped from './components/Wrapped';
 import { fetchAllUserData } from './api/leetcode';
+import { saveUserSearch } from './api/db';
 
 function App() {
   const [stage, setStage] = useState('landing'); // landing, loading, wrapped
@@ -18,12 +19,13 @@ function App() {
 
     try {
       const data = await fetchAllUserData(inputUsername);
-      
+
       if (!data.profile || data.profile.errors) {
         throw new Error('User not found');
       }
-      
+
       setUserData(data);
+      saveUserSearch(inputUsername);
       setStage('wrapped');
     } catch (err) {
       setError(err.message || 'Failed to fetch user data');
@@ -42,9 +44,9 @@ function App() {
     <div className="app">
       <AnimatePresence mode="wait">
         {stage === 'landing' && (
-          <Landing 
-            key="landing" 
-            onSubmit={handleSubmit} 
+          <Landing
+            key="landing"
+            onSubmit={handleSubmit}
             error={error}
           />
         )}
@@ -52,9 +54,9 @@ function App() {
           <Loading key="loading" username={username} />
         )}
         {stage === 'wrapped' && userData && (
-          <Wrapped 
-            key="wrapped" 
-            data={userData} 
+          <Wrapped
+            key="wrapped"
+            data={userData}
             username={username}
             onRestart={handleRestart}
           />

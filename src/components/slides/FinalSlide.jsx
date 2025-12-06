@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import ShareButton from '../ShareButton';
 import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { updateUserEmail } from '../../api/db';
 
 const YEAR = 2025;
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -175,6 +176,8 @@ function FinalSlide({ data, username, avatar }) {
           <a href="https://collinboler.com" style="color: #0066cc; text-decoration: none; font-weight: bold;">collinboler</a></p>
         </div>
       `;
+
+      await updateUserEmail(username, email);
 
       await addDoc(collection(db, 'mail'), {
         to: email,
