@@ -16,7 +16,7 @@ import FinalSlide from './slides/FinalSlide';
 function Wrapped({ data, username, onRestart }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const avatar = data.profile?.avatar;
-  
+
   const slides = [
     { component: IntroSlide, props: { username, data } },
     // Activity slides first
@@ -95,14 +95,14 @@ function Wrapped({ data, username, onRestart }) {
   const CurrentSlideComponent = slides[currentSlide].component;
 
   return (
-    <motion.div 
+    <motion.div
       className="wrapped-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       {/* Header - show on all slides */}
-      <motion.div 
+      <motion.div
         className="wrapped-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -116,26 +116,28 @@ function Wrapped({ data, username, onRestart }) {
           alignItems: 'center',
           justifyContent: 'flex-start',
           padding: '1.25rem 1.5rem',
-          gap: '1rem',
+          gap: '0.5rem',
+          cursor: 'pointer',
         }}
+        onClick={() => window.location.reload()}
       >
-        <img 
-          src="/leetcodewrapped.png" 
-          alt="leetcode wrapped" 
+        <img
+          src="/leetcodewrapped.png"
+          alt="leetcode wrapped"
           style={{ width: '48px', height: '48px' }}
         />
         <span style={{ fontFamily: 'Clash Display, sans-serif', fontSize: '1.4rem', fontWeight: 700 }}>
           <span style={{ color: '#fea216' }}>leet</span>
           <span style={{ color: '#b3b3b3' }}>code</span>
           {' '}
-          <span style={{ color: '#f32426', fontStyle: 'italic' }}>wrapped</span>
-        </span>
-        <span style={{ 
-          fontSize: '1.4rem', 
-          fontWeight: 600, 
-          color: 'rgba(255, 255, 255, 0.7)' 
-        }}>
-          2025
+          <span style={{
+            background: 'linear-gradient(to top, #f32426, #ffffff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontStyle: 'italic',
+            paddingRight: '0.2em'
+          }}>wrapped</span>
         </span>
       </motion.div>
 
@@ -156,7 +158,7 @@ function Wrapped({ data, username, onRestart }) {
       </motion.div>
 
       <AnimatePresence mode="wait">
-        <CurrentSlideComponent 
+        <CurrentSlideComponent
           key={currentSlide}
           {...slides[currentSlide].props}
         />
@@ -164,19 +166,23 @@ function Wrapped({ data, username, onRestart }) {
 
       {/* Navigation buttons */}
       <div className="nav-buttons">
-        <button 
-          className="nav-btn" 
+        <button
+          className="nav-btn"
           onClick={prevSlide}
           disabled={currentSlide === 0}
         >
-          ←
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
         </button>
-        <button 
-          className="nav-btn" 
+        <button
+          className="nav-btn"
           onClick={nextSlide}
           disabled={currentSlide === slides.length - 1}
         >
-          →
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
         </button>
       </div>
 

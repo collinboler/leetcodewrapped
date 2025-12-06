@@ -21,14 +21,14 @@ function Landing({ onSubmit, error }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim()) return;
-    
+
     setIsSubmitting(true);
     await onSubmit(username.trim());
     setIsSubmitting(false);
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="landing"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -36,16 +36,16 @@ function Landing({ onSubmit, error }) {
       transition={{ duration: 0.5 }}
     >
       <div className="landing-content">
-        <motion.div 
+        <motion.div
           className="logo-container"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <img 
-            src="/leetcodewrapped.png" 
-            alt="LeetCode" 
-            className="logo" 
+          <img
+            src="/leetcodewrapped.png"
+            alt="LeetCode"
+            className="logo"
             style={{ animation: 'none', width: '160px', height: '160px' }}
           />
         </motion.div>
@@ -59,10 +59,17 @@ function Landing({ onSubmit, error }) {
           <span style={{ color: '#fea216' }}>leet</span>
           <span style={{ color: '#b3b3b3' }}>code</span>
           <br />
-          <span style={{ color: '#f32426', fontStyle: 'italic' }}>wrapped</span>
+          <span style={{
+            background: 'linear-gradient(to top, #f32426, #ffffff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontStyle: 'italic',
+            paddingRight: '0.2em'
+          }}>wrapped</span>
         </motion.h1>
 
-        <motion.div 
+        <motion.div
           className="year"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -71,15 +78,15 @@ function Landing({ onSubmit, error }) {
           2025
         </motion.div>
 
-        <motion.form 
+        <motion.form
           className="input-container"
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
-          <div style={{ 
-            position: 'relative', 
+          <div style={{
+            position: 'relative',
             width: '100%',
             maxWidth: '400px',
           }}>
@@ -90,7 +97,7 @@ function Landing({ onSubmit, error }) {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={isSubmitting}
-              style={{ 
+              style={{
                 paddingRight: '60px',
                 borderRadius: '50px',
                 height: '56px',
@@ -99,7 +106,7 @@ function Landing({ onSubmit, error }) {
                 border: '2px solid rgba(255, 161, 22, 0.4)',
               }}
             />
-            
+
             {/* Circular arrow button */}
             <button
               type="submit"
@@ -135,14 +142,14 @@ function Landing({ onSubmit, error }) {
                 />
               ) : (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/>
+                  <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z" />
                 </svg>
               )}
             </button>
           </div>
 
           {error && (
-            <motion.div 
+            <motion.div
               className="error-message"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -154,12 +161,12 @@ function Landing({ onSubmit, error }) {
       </div>
 
       {/* Snowflakes */}
-      <div style={{ 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        bottom: 0, 
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
       }}>

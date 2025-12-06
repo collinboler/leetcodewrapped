@@ -7,25 +7,27 @@ function DifficultySlide({ data, username, avatar }) {
   const hard = data.solved?.hardSolved || 0;
   const total = easy + medium + hard || 1;
 
+  const maxCount = Math.max(easy, medium, hard, 1);
+
   const difficulties = [
-    { 
-      label: 'Easy', 
-      count: easy, 
-      percent: (easy / total) * 100,
+    {
+      label: 'Easy',
+      count: easy,
+      percent: (easy / maxCount) * 100,
       className: 'easy',
       color: '#00B8A3',
     },
-    { 
-      label: 'Medium', 
-      count: medium, 
-      percent: (medium / total) * 100,
+    {
+      label: 'Medium',
+      count: medium,
+      percent: (medium / maxCount) * 100,
       className: 'medium',
       color: '#FFC01E',
     },
-    { 
-      label: 'Hard', 
-      count: hard, 
-      percent: (hard / total) * 100,
+    {
+      label: 'Hard',
+      count: hard,
+      percent: (hard / maxCount) * 100,
       className: 'hard',
       color: '#FF375F',
     },
@@ -35,7 +37,7 @@ function DifficultySlide({ data, username, avatar }) {
   const maxDifficulty = difficulties.reduce((a, b) => a.count > b.count ? a : b);
 
   return (
-    <motion.div 
+    <motion.div
       className="slide difficulty-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -44,11 +46,12 @@ function DifficultySlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.h2
-          style={{ 
-            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-            fontWeight: 600,
-            marginBottom: '0.5rem',
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
+            marginBottom: '1.5rem',
             textAlign: 'center',
+            color: 'rgba(255, 255, 255, 0.7)',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +61,7 @@ function DifficultySlide({ data, username, avatar }) {
         </motion.h2>
 
         <motion.p
-          style={{ 
+          style={{
             color: 'rgba(255, 255, 255, 0.6)',
             marginBottom: '2rem',
           }}
@@ -66,14 +69,14 @@ function DifficultySlide({ data, username, avatar }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          You're a <span style={{ color: maxDifficulty.color, fontWeight: 700 }}>
+          You're {maxDifficulty.label === 'Easy' ? 'an' : 'a'} <span style={{ color: maxDifficulty.color, fontWeight: 700 }}>
             {maxDifficulty.label}
           </span> problem crusher!
         </motion.p>
 
-        <div className="difficulty-bars" style={{ width: '100%', maxWidth: '400px', padding: '0 1rem' }}>
+        <div className="difficulty-bars" style={{ width: '90%', maxWidth: '500px', padding: '0 1rem', margin: '0 auto' }}>
           {difficulties.map((diff, index) => (
-            <motion.div 
+            <motion.div
               key={diff.label}
               className="difficulty-item"
               initial={{ opacity: 0, x: -50 }}
@@ -84,7 +87,7 @@ function DifficultySlide({ data, username, avatar }) {
                 {diff.label}
               </span>
               <div className="difficulty-bar-container">
-                <motion.div 
+                <motion.div
                   className={`difficulty-bar ${diff.className}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.max(diff.percent, 10)}%` }}

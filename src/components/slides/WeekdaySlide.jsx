@@ -63,7 +63,7 @@ function WeekdaySlide({ data, username, avatar }) {
   const maxSubs = Math.max(...dayStats.map(d => d.submissions));
 
   return (
-    <motion.div 
+    <motion.div
       className="slide"
       style={{
         background: `
@@ -79,10 +79,11 @@ function WeekdaySlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
-          style={{ 
-            fontSize: '1.2rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '1rem',
+            marginBottom: '1.5rem',
             textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
@@ -113,7 +114,7 @@ function WeekdaySlide({ data, username, avatar }) {
             </motion.div>
 
             <motion.div
-              style={{ 
+              style={{
                 color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '2rem',
                 fontSize: '1rem',
@@ -135,7 +136,7 @@ function WeekdaySlide({ data, username, avatar }) {
                 gap: 'clamp(0.4rem, 2vw, 1rem)',
                 height: '150px',
                 width: '100%',
-                maxWidth: '450px',
+                maxWidth: '500px',
                 padding: '0 1rem',
                 margin: '0 auto',
               }}
@@ -160,15 +161,15 @@ function WeekdaySlide({ data, username, avatar }) {
                     style={{
                       width: '100%',
                       maxWidth: '40px',
-                      background: day.isMax 
-                        ? 'linear-gradient(180deg, #40C4A9, #2d8f7a)' 
+                      background: day.isMax
+                        ? 'linear-gradient(180deg, #40C4A9, #2d8f7a)'
                         : `linear-gradient(180deg, ${getDayColor(false)}88, ${getDayColor(false)}44)`,
                       borderRadius: '4px 4px 0 0',
                       boxShadow: day.isMax ? '0 0 20px rgba(64, 196, 169, 0.4)' : 'none',
                     }}
                     initial={{ height: 0 }}
-                    animate={{ 
-                      height: maxSubs > 0 ? `${Math.max((day.submissions / maxSubs) * 120, 4)}px` : 4 
+                    animate={{
+                      height: maxSubs > 0 ? `${Math.max((day.submissions / maxSubs) * 120, 4)}px` : 4
                     }}
                     transition={{ duration: 0.6, delay: 1 + index * 0.05 }}
                   />
@@ -193,7 +194,7 @@ function WeekdaySlide({ data, username, avatar }) {
           </>
         ) : (
           <motion.div
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.5)',
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',

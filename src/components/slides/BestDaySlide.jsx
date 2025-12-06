@@ -15,8 +15,8 @@ function BestDaySlide({ data, username, avatar }) {
       submissionMap = {};
     }
 
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                        'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     // Find the day with most submissions
@@ -28,7 +28,7 @@ function BestDaySlide({ data, username, avatar }) {
       // Use UTC to match LeetCode's timezone
       const date = new Date(parseInt(timestamp) * 1000);
       const year = date.getUTCFullYear();
-      
+
       if (year === YEAR) {
         if (count > 0) daysWithActivity++;
         if (count > maxSubs) {
@@ -53,7 +53,7 @@ function BestDaySlide({ data, username, avatar }) {
     const month = monthNames[maxDate.getUTCMonth()];
     const day = maxDate.getUTCDate();
     const weekday = dayNames[maxDate.getUTCDay()];
-    
+
     // Add ordinal suffix
     const getOrdinal = (n) => {
       const s = ['th', 'st', 'nd', 'rd'];
@@ -70,17 +70,10 @@ function BestDaySlide({ data, username, avatar }) {
     };
   }, [calendarData]);
 
-  // Fun messages based on submission count
-  const getMessage = (count) => {
-    if (count >= 50) return "You were absolutely on fire!";
-    if (count >= 30) return "An incredible coding marathon!";
-    if (count >= 20) return "You were in the zone!";
-    if (count >= 10) return "A super productive session!";
-    return "You showed up and crushed it!";
-  };
+
 
   return (
-    <motion.div 
+    <motion.div
       className="slide"
       style={{
         background: `
@@ -96,8 +89,9 @@ function BestDaySlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
-          style={{ 
-            fontSize: '1.2rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1.5rem',
             textAlign: 'center',
@@ -130,7 +124,7 @@ function BestDaySlide({ data, username, avatar }) {
             </motion.div>
 
             <motion.div
-              style={{ 
+              style={{
                 color: 'rgba(255, 255, 255, 0.5)',
                 marginBottom: '1.5rem',
                 fontSize: '1rem',
@@ -145,9 +139,6 @@ function BestDaySlide({ data, username, avatar }) {
 
             <motion.div
               style={{
-                background: 'rgba(255, 215, 0, 0.1)',
-                border: '1px solid rgba(255, 215, 0, 0.3)',
-                borderRadius: '16px',
                 padding: '1.5rem 2rem',
                 marginBottom: '1rem',
               }}
@@ -160,7 +151,7 @@ function BestDaySlide({ data, username, avatar }) {
                   fontFamily: 'Clash Display, sans-serif',
                   fontSize: 'clamp(3rem, 8vw, 4.5rem)',
                   fontWeight: 700,
-                  color: '#FFD700',
+                  color: '#FFFFFF',
                   lineHeight: 1,
                 }}
                 initial={{ scale: 0 }}
@@ -178,22 +169,11 @@ function BestDaySlide({ data, username, avatar }) {
               </div>
             </motion.div>
 
-            <motion.div
-              style={{ 
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontSize: '1.1rem',
-                fontStyle: 'italic',
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              {getMessage(bestDaySubmissions)}
-            </motion.div>
+
           </>
         ) : (
           <motion.div
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.5)',
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',

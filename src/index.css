@@ -22,7 +22,9 @@
   --gradient-orange: linear-gradient(135deg, #FFA116 0%, #FF6B35 100%);
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
 }
@@ -47,7 +49,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: 
+  background:
     radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 50%, rgba(255, 161, 22, 0.08) 0%, transparent 70%),
@@ -63,7 +65,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
   pointer-events: none;
@@ -210,7 +212,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -238,6 +242,11 @@ body {
   overflow: hidden;
 }
 
+/* Shift content up for generic slides (not intro or final) */
+.slide:not(.intro-slide):not(.final-slide) {
+  padding-bottom: 6rem;
+}
+
 .slide-content {
   max-width: 800px;
   width: 100%;
@@ -247,7 +256,7 @@ body {
 
 /* Intro Slide */
 .intro-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 30% 30%, rgba(255, 161, 22, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 70%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
     var(--lc-darker);
@@ -278,7 +287,7 @@ body {
 
 /* Stats Slide */
 .stats-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 0%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 100%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
     var(--lc-darker);
@@ -309,7 +318,7 @@ body {
 
 /* Difficulty Breakdown */
 .difficulty-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 20% 50%, rgba(0, 184, 163, 0.15) 0%, transparent 40%),
     radial-gradient(ellipse at 50% 50%, rgba(255, 192, 30, 0.15) 0%, transparent 40%),
     radial-gradient(ellipse at 80% 50%, rgba(255, 55, 95, 0.15) 0%, transparent 40%),
@@ -337,9 +346,17 @@ body {
   text-align: right;
 }
 
-.difficulty-label.easy { color: var(--lc-easy); }
-.difficulty-label.medium { color: var(--lc-medium); }
-.difficulty-label.hard { color: var(--lc-hard); }
+.difficulty-label.easy {
+  color: var(--lc-easy);
+}
+
+.difficulty-label.medium {
+  color: var(--lc-medium);
+}
+
+.difficulty-label.hard {
+  color: var(--lc-hard);
+}
 
 .difficulty-bar-container {
   flex: 1;
@@ -362,13 +379,21 @@ body {
   padding-left: 1rem;
 }
 
-.difficulty-bar.easy { background: linear-gradient(90deg, var(--lc-easy), #00D4B8); }
-.difficulty-bar.medium { background: linear-gradient(90deg, var(--lc-medium), #FFD54F); }
-.difficulty-bar.hard { background: linear-gradient(90deg, var(--lc-hard), #FF6B8A); }
+.difficulty-bar.easy {
+  background: linear-gradient(90deg, var(--lc-easy), #00D4B8);
+}
+
+.difficulty-bar.medium {
+  background: linear-gradient(90deg, var(--lc-medium), #FFD54F);
+}
+
+.difficulty-bar.hard {
+  background: linear-gradient(90deg, var(--lc-hard), #FF6B8A);
+}
 
 /* Language Slide */
 .language-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 30%, rgba(79, 172, 254, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 70%, rgba(0, 242, 254, 0.15) 0%, transparent 50%),
     var(--lc-darker);
@@ -420,7 +445,7 @@ body {
 
 /* Streak Slide */
 .streak-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 50%, rgba(250, 112, 154, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 30% 70%, rgba(254, 225, 64, 0.15) 0%, transparent 50%),
     var(--lc-darker);
@@ -444,7 +469,7 @@ body {
 
 /* Contest Slide */
 .contest-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 30%, rgba(67, 233, 123, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 70%, rgba(56, 249, 215, 0.15) 0%, transparent 50%),
     var(--lc-darker);
@@ -484,7 +509,7 @@ body {
 
 /* Activity Calendar Slide */
 .calendar-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 50%, rgba(168, 237, 234, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 80%, rgba(254, 214, 227, 0.1) 0%, transparent 50%),
     var(--lc-darker);
@@ -506,10 +531,21 @@ body {
   min-width: 10px;
 }
 
-.calendar-cell.level-1 { background: rgba(0, 184, 163, 0.3); }
-.calendar-cell.level-2 { background: rgba(0, 184, 163, 0.5); }
-.calendar-cell.level-3 { background: rgba(0, 184, 163, 0.7); }
-.calendar-cell.level-4 { background: rgba(0, 184, 163, 1); }
+.calendar-cell.level-1 {
+  background: rgba(0, 184, 163, 0.3);
+}
+
+.calendar-cell.level-2 {
+  background: rgba(0, 184, 163, 0.5);
+}
+
+.calendar-cell.level-3 {
+  background: rgba(0, 184, 163, 0.7);
+}
+
+.calendar-cell.level-4 {
+  background: rgba(0, 184, 163, 1);
+}
 
 .calendar-stats {
   display: flex;
@@ -538,7 +574,7 @@ body {
 
 /* Badges Slide */
 .badges-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 30% 30%, rgba(255, 161, 22, 0.2) 0%, transparent 40%),
     radial-gradient(ellipse at 70% 70%, rgba(240, 147, 251, 0.15) 0%, transparent 40%),
     var(--lc-darker);
@@ -586,7 +622,7 @@ body {
 
 /* Final Slide */
 .final-slide {
-  background: 
+  background:
     radial-gradient(ellipse at 50% 30%, rgba(255, 161, 22, 0.25) 0%, transparent 50%),
     radial-gradient(ellipse at 30% 70%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 60%, rgba(240, 147, 251, 0.15) 0%, transparent 50%),
@@ -683,7 +719,7 @@ body {
 /* Navigation */
 .nav-buttons {
   position: fixed;
-  bottom: 2rem;
+  bottom: 4rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -708,8 +744,8 @@ body {
 }
 
 .nav-btn:hover:not(:disabled) {
-  border-color: var(--lc-orange);
-  background: rgba(255, 161, 22, 0.2);
+  border-color: white;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-btn:disabled {
@@ -719,12 +755,13 @@ body {
 
 .slide-indicator {
   position: fixed;
-  right: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 140px;
+  /* Positioned above the nav buttons */
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  gap: 0.8rem;
   z-index: 100;
 }
 
@@ -735,11 +772,14 @@ body {
   background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .indicator-dot.active {
-  background: var(--lc-orange);
-  transform: scale(1.3);
+  background: white;
+  width: 24px;
+  border-radius: 5px;
+  transform: scale(1);
 }
 
 .indicator-dot:hover {
@@ -748,7 +788,7 @@ body {
 
 /* Wrapped Header */
 .wrapped-header {
-  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+  background: transparent;
 }
 
 /* GitHub Star Button */
@@ -766,36 +806,58 @@ body {
 }
 
 /* Responsive */
+/* Responsive */
 @media (max-width: 768px) {
   .slide {
     padding: 1.5rem;
     padding-top: 4rem;
   }
-  
+
   .difficulty-item {
-    flex-direction: column;
-    align-items: stretch;
+    /* Keep row layout on mobile */
+    flex-direction: row;
+    align-items: center;
   }
-  
+
   .difficulty-label {
-    text-align: left;
-    width: auto;
+    /* Restore width and alignment */
+    text-align: right;
+    width: 80px;
+    font-size: 1rem;
+    /* Slightly smaller font for mobile if needed */
   }
-  
+
   .nav-buttons {
-    bottom: 1rem;
+    bottom: 3rem;
   }
-  
+
   .slide-indicator {
-    right: 1rem;
+    bottom: 120px;
+    /* Lowered from 100px, but higher than nav buttons */
+    left: 50%;
+    transform: translateX(-50%);
   }
-  
+
+  .difficulty-bars {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90% !important;
+    /* Ensure it doesn't touch edges */
+  }
+
   .calendar-grid {
     display: none;
   }
-  
+
   .wrapped-header {
     justify-content: center !important;
+  }
+
+  /* Scale down headers in mobile */
+  .slide:not(.intro-slide):not(.final-slide) .slide-content>div:first-child,
+  .slide:not(.intro-slide):not(.final-slide) .slide-content>h2:first-child {
+    font-size: 1.2rem !important;
+    /* 20% smaller than 1.5rem */
   }
 }
 
@@ -805,6 +867,7 @@ body {
     opacity: 0;
     transform: translateY(50px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -812,8 +875,13 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
@@ -821,6 +889,7 @@ body {
     opacity: 0;
     transform: scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -828,26 +897,52 @@ body {
 }
 
 @keyframes countUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-slide-up {
-  animation: slideUp 0.8s ease-out forwards;
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 1s ease-out forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.6s ease-out forwards;
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Stagger animations */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.animate-count-up {
+  animation: countUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
+
+
+/* Stagger animations */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}

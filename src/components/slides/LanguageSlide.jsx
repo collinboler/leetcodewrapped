@@ -4,13 +4,13 @@ import ShareButton from '../ShareButton';
 function LanguageSlide({ data, username, avatar }) {
   // Get language stats
   let languageStats = [];
-  
+
   if (data.languageStats?.languageProblemCount) {
     languageStats = data.languageStats.languageProblemCount;
   } else if (Array.isArray(data.languageStats)) {
     languageStats = data.languageStats;
   }
-  
+
   // Merge similar languages (Python + Python3, etc.)
   const mergedStats = {};
   languageStats.forEach(lang => {
@@ -19,17 +19,17 @@ function LanguageSlide({ data, username, avatar }) {
     if (normalizedName.toLowerCase() === 'python3' || normalizedName.toLowerCase() === 'python') {
       normalizedName = 'Python';
     }
-    
+
     if (mergedStats[normalizedName]) {
       mergedStats[normalizedName].problemsSolved += lang.problemsSolved;
     } else {
-      mergedStats[normalizedName] = { 
-        languageName: normalizedName, 
-        problemsSolved: lang.problemsSolved 
+      mergedStats[normalizedName] = {
+        languageName: normalizedName,
+        problemsSolved: lang.problemsSolved
       };
     }
   });
-  
+
   // Sort by problem count
   const sortedLanguages = Object.values(mergedStats)
     .filter(l => l.problemsSolved > 0)
@@ -103,7 +103,7 @@ function LanguageSlide({ data, username, avatar }) {
   const maxSolved = topLanguage?.problemsSolved || 1;
 
   return (
-    <motion.div 
+    <motion.div
       className="slide language-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -112,8 +112,9 @@ function LanguageSlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
-          style={{ 
-            fontSize: '1.3rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: '1.5rem',
             textAlign: 'center',
@@ -128,9 +129,9 @@ function LanguageSlide({ data, username, avatar }) {
         {topLanguage ? (
           <>
             <motion.div
-              style={{ 
-                width: '80px', 
-                height: '80px', 
+              style={{
+                width: '80px',
+                height: '80px',
                 marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -141,8 +142,8 @@ function LanguageSlide({ data, username, avatar }) {
               transition={{ type: "spring", duration: 0.8, delay: 0.4 }}
             >
               {getIconUrl(topLanguage.languageName) ? (
-                <img 
-                  src={getIconUrl(topLanguage.languageName)} 
+                <img
+                  src={getIconUrl(topLanguage.languageName)}
                   alt={topLanguage.languageName}
                   style={{ width: '80px', height: '80px' }}
                   onError={(e) => { e.target.style.display = 'none'; }}
@@ -154,7 +155,7 @@ function LanguageSlide({ data, username, avatar }) {
               )}
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="top-language"
               style={{ textAlign: 'center', marginBottom: '2rem' }}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -165,7 +166,7 @@ function LanguageSlide({ data, username, avatar }) {
             </motion.div>
 
             {/* Bar graph for top 5 languages */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
@@ -174,12 +175,12 @@ function LanguageSlide({ data, username, avatar }) {
                 flexDirection: 'column',
                 gap: '0.5rem',
                 width: '100%',
-                maxWidth: '350px',
+                maxWidth: '500px',
                 padding: '0 1rem',
               }}
             >
               {top5Languages.map((lang, index) => (
-                <motion.div 
+                <motion.div
                   key={lang.languageName}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -190,17 +191,17 @@ function LanguageSlide({ data, username, avatar }) {
                     gap: '0.5rem',
                   }}
                 >
-                  <div style={{ 
-                    width: '24px', 
-                    height: '24px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                  <div style={{
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}>
                     {getIconUrl(lang.languageName) ? (
-                      <img 
-                        src={getIconUrl(lang.languageName)} 
+                      <img
+                        src={getIconUrl(lang.languageName)}
                         alt=""
                         style={{ width: '20px', height: '20px' }}
                         onError={(e) => e.target.style.display = 'none'}
@@ -261,7 +262,7 @@ function LanguageSlide({ data, username, avatar }) {
           </>
         ) : (
           <motion.div
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.5)',
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',

@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import ShareButton from '../ShareButton';
+import { db } from '../../firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const YEAR = 2025;
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const FULL_DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const languageIcons = {
@@ -57,16 +59,16 @@ function FinalSlide({ data, username, avatar }) {
         weekdayCounts[date.getUTCDay()] += count;
         const dayKey = `${MONTH_NAMES[month]} ${date.getUTCDate()}`;
         dayCounts[dayKey] = (dayCounts[dayKey] || 0) + count;
-        sortedDates.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth()+1).padStart(2,'0')}-${String(date.getUTCDate()).padStart(2,'0')}`);
+        sortedDates.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`);
       }
     });
 
     sortedDates.sort();
     let tempStreak = 1;
     for (let i = 1; i < sortedDates.length; i++) {
-      const prev = new Date(sortedDates[i-1] + 'T00:00:00Z');
+      const prev = new Date(sortedDates[i - 1] + 'T00:00:00Z');
       const curr = new Date(sortedDates[i] + 'T00:00:00Z');
-      if ((curr - prev) / (1000*60*60*24) === 1) {
+      if ((curr - prev) / (1000 * 60 * 60 * 24) === 1) {
         tempStreak++;
         longestStreak = Math.max(longestStreak, tempStreak);
       } else {
@@ -97,10 +99,11 @@ function FinalSlide({ data, username, avatar }) {
       if (name.toLowerCase() === 'python3' || name.toLowerCase() === 'python') name = 'Python';
       mergedLangs[name] = (mergedLangs[name] || 0) + l.problemsSolved;
     });
-    const topLang = Object.entries(mergedLangs).sort((a,b) => b[1] - a[1])[0]?.[0] || null;
+    const topLang = Object.entries(mergedLangs).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 
     const skillStats = data.skillStats;
     let topTopic = null;
+    let maxTag = 0;
     if (skillStats) {
       const allTags = {};
       ['fundamental', 'intermediate', 'advanced'].forEach(level => {
@@ -110,7 +113,7 @@ function FinalSlide({ data, username, avatar }) {
           });
         }
       });
-      let maxTag = 0;
+
       Object.entries(allTags).forEach(([n, c]) => {
         if (c > maxTag) { maxTag = c; topTopic = n; }
       });
@@ -121,15 +124,78 @@ function FinalSlide({ data, username, avatar }) {
       activeDays,
       longestStreak,
       bestMonth,
+      bestMonthCount: maxMonthCount,
       bestWeekday: FULL_DAY_NAMES[bestWeekdayIdx],
+      bestWeekdayCount: maxWeekday,
       bestDay,
+      bestDayCount: maxDayCount,
       topLanguage: topLang,
+      topLanguageCount: mergedLangs[topLang] || 0,
       topTopic,
+      topTopicCount: maxTag,
+      dominantDifficulty: dominantDifficulty.name,
+      dominantDifficultyCount: dominantDifficulty.name === 'Easy' ? easy : dominantDifficulty.name === 'Medium' ? medium : hard,
+      badgesCount: data.badges?.length || 0,
+      badges: data.badges || [],
     };
   }, [data]);
 
   const langIcon = stats.topLanguage ? languageIcons[stats.topLanguage.toLowerCase()] : null;
 
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const summaryHtml = `
+        <div style="font-family: sans-serif; color: #333;">
+          <p>hey <strong>${username}</strong>,</p>
+          <p>it's collin here, developer of leetcodewrapped. thanks for trying it out!</p>
+          <p>here's your 2025 leetcode journey wrapped:</p>
+          <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>favorite day to leetcode: <strong>${stats.bestWeekday.toLowerCase()}</strong> (${stats.bestWeekdayCount} submissions)</li>
+            <li>longest streak: <strong>${stats.longestStreak}</strong></li>
+            <li>most productive month: <strong>${stats.bestMonth?.toLowerCase()}</strong> (${stats.bestMonthCount} submissions)</li>
+            <li>most productive day: <strong>${stats.bestDay?.toLowerCase()}</strong> (${stats.bestDayCount} submissions)</li>
+            <li>favorite coding language: <strong>${stats.topLanguage?.toLowerCase() || 'n/a'}</strong> (${stats.topLanguageCount} problems solved)</li>
+            <li>your top skill: <strong>${stats.topTopic?.toLowerCase() || 'n/a'}</strong> (${stats.topTopicCount} problems solved)</li>
+            <li>your top difficulty: <strong>${stats.dominantDifficulty.toLowerCase()}</strong> (${stats.dominantDifficultyCount} problems solved)</li>
+            <li><strong>${stats.badgesCount}</strong> badge${stats.badgesCount !== 1 ? 's' : ''} earned ${stats.badges.length > 0 ? `(${stats.badges[0].displayName}...)` : ''}</li>
+          </ul>
+          <p>feel free to share <a href="https://leetcodewrapped.com" style="color: #0066cc; text-decoration: none; font-weight: bold;">leetcodewrapped.com</a> with friends, and happy leetcoding!</p>
+          <p>yours truly,<br>
+          <a href="https://collinboler.com" style="color: #0066cc; text-decoration: none; font-weight: bold;">collinboler</a></p>
+        </div>
+      `;
+
+      await addDoc(collection(db, 'mail'), {
+        to: email,
+        message: {
+          subject: 'Your LeetCode Wrapped 2025',
+          html: summaryHtml,
+        },
+        username: username,
+        timestamp: new Date(),
+      });
+
+      setIsSent(true);
+    } catch (err) {
+      console.error('Error sending email:', err);
+      setError('Failed to send email. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /*
   const gridItems = [
     { label: 'Problems', value: total, color: '#FFA116' },
     { label: 'Difficulty', value: `Mostly ${dominantDifficulty.name}`, color: dominantDifficulty.color },
@@ -140,15 +206,16 @@ function FinalSlide({ data, username, avatar }) {
     { label: 'Top Weekday', value: stats.bestWeekday?.slice(0,3), color: '#f59e0b' },
     { label: 'Peak Day', value: stats.bestDay, color: '#FFD700' },
   ];
+  */
 
   return (
-    <motion.div 
+    <motion.div
       className="slide final-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
-      style={{ 
+      style={{
         overflowY: 'auto',
         display: 'flex',
         alignItems: 'center',
@@ -156,7 +223,7 @@ function FinalSlide({ data, username, avatar }) {
         paddingBottom: '180px',
       }}
     >
-      <div style={{ 
+      <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -174,6 +241,7 @@ function FinalSlide({ data, username, avatar }) {
           That's a wrap, <span style={{ color: '#FFA116' }}>{username}</span>!
         </motion.h1>
 
+        {/* 
         <motion.div
           style={{
             display: 'grid',
@@ -252,6 +320,130 @@ function FinalSlide({ data, username, avatar }) {
             <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)' }}>Top Skill</div>
           </div>
         </motion.div>
+        */}
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          style={{ width: '100%', marginTop: '1rem' }}
+        >
+          {!isSent ? (
+            <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.8)', textAlign: 'center', fontSize: '0.9rem' }}>
+                Let me send you a special wrapped summary!
+              </p>
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '400px',
+              }}>
+                <input
+                  type="email"
+                  placeholder="zuck@meta.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                  style={{
+                    width: '100%',
+                    paddingRight: '60px',
+                    borderRadius: '50px',
+                    height: '56px',
+                    paddingLeft: '24px',
+                    background: 'rgba(45, 45, 45, 0.8)',
+                    border: '2px solid rgba(255, 161, 22, 0.4)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !email.trim()}
+                  style={{
+                    position: 'absolute',
+                    right: '6px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: email.trim() ? 'var(--gradient-orange)' : 'rgba(255, 161, 22, 0.3)',
+                    border: 'none',
+                    cursor: isSubmitting || !email.trim() ? 'default' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: email.trim() ? 1 : 0.5,
+                  }}
+                >
+                  {isSubmitting ? (
+                    <motion.div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: '2px solid rgba(255,255,255,0.3)',
+                        borderTopColor: '#fff',
+                        borderRadius: '50%',
+                      }}
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    />
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {error && (
+                <p style={{ color: '#ff4d4f', fontSize: '0.8rem', marginTop: '0.5rem' }}>{error}</p>
+              )}
+            </form>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                width: '100%',
+                maxWidth: '400px',
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(45, 45, 45, 0.8)',
+                border: '2px solid rgba(76, 175, 80, 0.5)',
+                borderRadius: '50px',
+                color: '#4caf50',
+                fontWeight: 600,
+                fontSize: '1rem',
+                margin: '0 auto',
+              }}
+            >
+              Sent! Check your inbox.
+            </motion.div>
+          )}
+        </motion.div>
+
+        <motion.div
+          style={{ marginTop: '1.5rem', marginBottom: '1rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.3 }}
+        >
+          made by{' '}
+          <a href="https://collinboler.com" target="_blank" rel="noopener noreferrer" style={{
+            background: 'linear-gradient(to top, #da3400, #ff8c66, #ffb899)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+            display: 'inline-block'
+          }}>
+            collinboler
+          </a>
+        </motion.div>
 
         {/* Share button inline */}
         <motion.div
@@ -261,19 +453,6 @@ function FinalSlide({ data, username, avatar }) {
           transition={{ delay: 1.1 }}
         >
           <ShareButton username={username} avatar={avatar} inline={true} />
-        </motion.div>
-
-        <motion.div
-          style={{ marginTop: '1.5rem', marginBottom: '1rem', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3 }}
-        >
-          Made by{' '}
-          <a href="https://collinboler.com" target="_blank" rel="noopener noreferrer" style={{ color: '#FFA116', textDecoration: 'none' }}>
-            collinboler
-          </a>
-          {' '}for the LeetCode community
         </motion.div>
       </div>
     </motion.div>

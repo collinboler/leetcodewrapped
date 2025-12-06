@@ -7,10 +7,10 @@ function TopicsSlide({ data, username, avatar }) {
   const topics = useMemo(() => {
     let topicList = [];
     const skillStats = data.skillStats;
-    
+
     if (skillStats) {
       const allTags = {};
-      
+
       ['fundamental', 'intermediate', 'advanced'].forEach(level => {
         if (skillStats[level] && Array.isArray(skillStats[level])) {
           skillStats[level].forEach(tag => {
@@ -22,13 +22,13 @@ function TopicsSlide({ data, username, avatar }) {
           });
         }
       });
-      
+
       topicList = Object.entries(allTags)
         .filter(([_, count]) => count > 0)
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count);
     }
-    
+
     return topicList;
   }, [data.skillStats]);
 
@@ -58,7 +58,7 @@ function TopicsSlide({ data, username, avatar }) {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       className="slide"
       style={{
         background: `
@@ -74,10 +74,11 @@ function TopicsSlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
         <motion.div
-          style={{ 
-            fontSize: '1.3rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '1rem',
+            marginBottom: '1.5rem',
             textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
@@ -113,7 +114,7 @@ function TopicsSlide({ data, username, avatar }) {
                 flexDirection: 'column',
                 gap: '0.6rem',
                 width: '100%',
-                maxWidth: '400px',
+                maxWidth: '500px',
                 padding: '0 1rem',
               }}
               initial={{ opacity: 0, y: 30 }}
@@ -160,20 +161,20 @@ function TopicsSlide({ data, username, avatar }) {
                           minWidth: 'fit-content',
                         }}
                         initial={{ width: 0 }}
-                        animate={{ 
-                          width: `${Math.max((topic.count / topTopics[0].count) * 100, 30)}%` 
+                        animate={{
+                          width: `${(topic.count / topTopics[0].count) * 100}%`
                         }}
                         transition={{ duration: 0.8, delay: 1 + index * 0.08 }}
                       >
-                        <span style={{ 
-                          fontWeight: 600, 
+                        <span style={{
+                          fontWeight: 600,
                           fontSize: '0.75rem',
                           whiteSpace: 'nowrap',
                           color: '#fff',
                         }}>
                           {shortenTopicName(topic.name)}
                         </span>
-                        <span style={{ 
+                        <span style={{
                           fontWeight: 700,
                           fontSize: '0.8rem',
                           color: '#fff',
@@ -189,7 +190,7 @@ function TopicsSlide({ data, username, avatar }) {
           </>
         ) : (
           <motion.div
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.5)',
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',

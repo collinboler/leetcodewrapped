@@ -6,7 +6,7 @@ const YEAR = 2025;
 
 function StreakSlide({ data, username, avatar }) {
   const [displayStreak, setDisplayStreak] = useState(0);
-  
+
   // Calculate longest streak in 2025
   const longestStreak2025 = useMemo(() => {
     const calendarData = data.calendar?.submissionCalendar || '{}';
@@ -16,7 +16,7 @@ function StreakSlide({ data, username, avatar }) {
     } catch (e) {
       return 0;
     }
-    
+
     const datesWithSubmissions = new Set();
     Object.entries(submissionMap).forEach(([timestamp, count]) => {
       const date = new Date(parseInt(timestamp) * 1000);
@@ -27,19 +27,19 @@ function StreakSlide({ data, username, avatar }) {
         datesWithSubmissions.add(`${year}-${month}-${day}`);
       }
     });
-    
+
     const sortedDates = Array.from(datesWithSubmissions).sort();
-    
+
     if (sortedDates.length === 0) return 0;
-    
+
     let longest = 1;
     let current = 1;
-    
+
     for (let i = 1; i < sortedDates.length; i++) {
       const prevDate = new Date(sortedDates[i - 1] + 'T00:00:00Z');
       const currDate = new Date(sortedDates[i] + 'T00:00:00Z');
       const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
-      
+
       if (diffDays === 1) {
         current++;
         longest = Math.max(longest, current);
@@ -55,7 +55,7 @@ function StreakSlide({ data, username, avatar }) {
     const steps = 40;
     const increment = longestStreak2025 / steps;
     let current = 0;
-    
+
     const timer = setInterval(() => {
       current += increment;
       if (current >= longestStreak2025) {
@@ -70,7 +70,7 @@ function StreakSlide({ data, username, avatar }) {
   }, [longestStreak2025]);
 
   return (
-    <motion.div 
+    <motion.div
       className="slide streak-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -79,10 +79,11 @@ function StreakSlide({ data, username, avatar }) {
     >
       <div className="slide-content" style={{ alignItems: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <motion.div
-          style={{ 
-            fontSize: '1.3rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '1rem',
+            marginBottom: '1.5rem',
             textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
@@ -92,7 +93,7 @@ function StreakSlide({ data, username, avatar }) {
           Longest streak
         </motion.div>
 
-        <motion.div 
+        <motion.div
           style={{
             fontFamily: 'Clash Display, sans-serif',
             fontSize: 'clamp(6rem, 20vw, 12rem)',
@@ -109,9 +110,9 @@ function StreakSlide({ data, username, avatar }) {
           {displayStreak}
         </motion.div>
 
-        <motion.div 
-          style={{ 
-            fontSize: '1.5rem', 
+        <motion.div
+          style={{
+            fontSize: '1.5rem',
             color: 'rgba(255, 255, 255, 0.5)',
             marginTop: '0.5rem',
           }}

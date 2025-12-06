@@ -21,7 +21,7 @@ function CalendarSlide({ data, username, avatar }) {
     let maxSubmissions = 0;
     let activeDaysCount = 0;
     const daysWithSubmissions = new Set();
-    
+
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthSubmissions = {};
     monthNames.forEach(m => monthSubmissions[m] = 0);
@@ -31,7 +31,7 @@ function CalendarSlide({ data, username, avatar }) {
     if (isLeapYear) daysInMonth[1] = 29;
 
     const daySubmissionMap = {};
-    
+
     Object.entries(submissionMap).forEach(([timestamp, count]) => {
       const date = new Date(parseInt(timestamp) * 1000);
       if (date.getUTCFullYear() === YEAR) {
@@ -39,16 +39,16 @@ function CalendarSlide({ data, username, avatar }) {
         const month = String(date.getUTCMonth() + 1).padStart(2, '0');
         const day = String(date.getUTCDate()).padStart(2, '0');
         const dayKey = `${year}-${month}-${day}`;
-        
+
         daySubmissionMap[dayKey] = (daySubmissionMap[dayKey] || 0) + count;
         totalSubmissions += count;
         maxSubmissions = Math.max(maxSubmissions, count);
-        
+
         if (!daysWithSubmissions.has(dayKey) && count > 0) {
           daysWithSubmissions.add(dayKey);
           activeDaysCount++;
         }
-        
+
         const monthIdx = date.getUTCMonth();
         monthSubmissions[monthNames[monthIdx]] += count;
       }
@@ -70,26 +70,26 @@ function CalendarSlide({ data, username, avatar }) {
       const days = [];
       const firstDay = new Date(Date.UTC(YEAR, idx, 1));
       const startDayOfWeek = firstDay.getUTCDay();
-      
+
       for (let i = 0; i < startDayOfWeek; i++) {
         days.push({ empty: true });
       }
-      
+
       for (let d = 1; d <= numDays; d++) {
         const month = String(idx + 1).padStart(2, '0');
         const day = String(d).padStart(2, '0');
         const dayKey = `${YEAR}-${month}-${day}`;
         const subs = daySubmissionMap[dayKey] || 0;
-        
+
         let level = 0;
         if (subs > 0) level = 1;
         if (subs >= 3) level = 2;
         if (subs >= 5) level = 3;
         if (subs >= 10) level = 4;
-        
+
         days.push({ day: d, submissions: subs, level, date: dayKey });
       }
-      
+
       return { name, days, total: monthSubmissions[name], idx };
     });
 
@@ -108,19 +108,21 @@ function CalendarSlide({ data, username, avatar }) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="slide calendar-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="slide-content" style={{ transform: 'scale(0.92)', transformOrigin: 'top center' }}>
+      <div className="slide-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <motion.div
-          style={{ 
-            fontSize: 'clamp(1rem, 3vw, 1.2rem)', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '0.5rem',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -133,16 +135,16 @@ function CalendarSlide({ data, username, avatar }) {
           <>
             <motion.div
               style={{
-                background: 'rgba(64, 196, 169, 0.1)',
+                background: 'transparent',
                 borderRadius: '16px',
                 padding: 'clamp(0.5rem, 1.5vw, 1rem) clamp(0.75rem, 2vw, 1.5rem)',
                 marginBottom: '0.75rem',
-                border: '1px solid rgba(64, 196, 169, 0.3)',
+                border: 'none',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 width: '100%',
-                maxWidth: 'clamp(260px, 70vw, 380px)',
+                maxWidth: 'clamp(208px, 56vw, 304px)',
                 margin: '0 auto 0.75rem auto',
               }}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -164,7 +166,7 @@ function CalendarSlide({ data, username, avatar }) {
                   {stats.monthTotal} submissions
                 </div>
               </div>
-              
+
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(7, 1fr)',
@@ -190,11 +192,11 @@ function CalendarSlide({ data, username, avatar }) {
                       width: '100%',
                       aspectRatio: '1',
                       borderRadius: '2px',
-                      background: cell.empty ? 'transparent' : 
-                        cell.level === 0 ? 'rgba(255, 255, 255, 0.08)' : 
-                        cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
-                        cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
-                        cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
+                      background: cell.empty ? 'transparent' :
+                        cell.level === 0 ? 'rgba(255, 255, 255, 0.08)' :
+                          cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
+                            cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
+                              cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
                     }}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -204,13 +206,13 @@ function CalendarSlide({ data, username, avatar }) {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(6, 1fr)',
                 gap: 'clamp(0.2rem, 0.8vw, 0.35rem)',
                 width: '100%',
-                maxWidth: '480px',
+                maxWidth: '384px',
                 justifyItems: 'center',
                 margin: '0 auto',
                 padding: '0 0.25rem',
@@ -240,7 +242,7 @@ function CalendarSlide({ data, username, avatar }) {
                     marginBottom: '0.1rem',
                     textAlign: 'center',
                   }}>
-                    {month.name}
+                    {monthIdx === mostActiveMonthIdx ? '' : month.name}
                   </div>
                   {monthIdx === mostActiveMonthIdx ? (
                     <div style={{
@@ -263,11 +265,11 @@ function CalendarSlide({ data, username, avatar }) {
                             width: '100%',
                             aspectRatio: '1',
                             borderRadius: '1px',
-                            background: cell.empty ? 'transparent' : 
-                              cell.level === 0 ? 'rgba(255, 255, 255, 0.06)' : 
-                              cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
-                              cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
-                              cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
+                            background: cell.empty ? 'transparent' :
+                              cell.level === 0 ? 'rgba(255, 255, 255, 0.06)' :
+                                cell.level === 1 ? 'rgba(64, 196, 169, 0.3)' :
+                                  cell.level === 2 ? 'rgba(64, 196, 169, 0.5)' :
+                                    cell.level === 3 ? 'rgba(64, 196, 169, 0.7)' : 'rgba(64, 196, 169, 1)',
                           }}
                         />
                       ))}

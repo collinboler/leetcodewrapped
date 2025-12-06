@@ -9,10 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "firebase": "^12.6.0",
     "framer-motion": "^10.16.4",
     "html2canvas": "^1.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "recharts": "^2.10.3"
   },
   "devDependencies": {
@@ -22,4 +23,3 @@
     "vite": "^5.0.0"
   }
 }
-

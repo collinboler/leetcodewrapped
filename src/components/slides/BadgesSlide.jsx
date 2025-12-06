@@ -6,7 +6,7 @@ function BadgesSlide({ data, username, avatar }) {
   const badgeCount = badges.length;
 
   return (
-    <motion.div 
+    <motion.div
       className="slide badges-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -15,10 +15,12 @@ function BadgesSlide({ data, username, avatar }) {
     >
       <div className="slide-content">
         <motion.div
-          style={{ 
-            fontSize: '1.3rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '2rem',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -45,7 +47,7 @@ function BadgesSlide({ data, username, avatar }) {
         </motion.div>
 
         <motion.div
-          style={{ 
+          style={{
             color: 'rgba(255, 255, 255, 0.6)',
             marginBottom: '2.5rem',
             fontSize: '1.2rem',
@@ -58,14 +60,15 @@ function BadgesSlide({ data, username, avatar }) {
         </motion.div>
 
         {badges.length > 0 ? (
-          <motion.div 
+          <motion.div
             className="badges-grid"
+            style={{ maxWidth: '600px', margin: '0 auto' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
           >
             {badges.slice(0, 12).map((badge, index) => (
-              <motion.div 
+              <motion.div
                 key={badge.id || index}
                 className="badge-item"
                 initial={{ opacity: 0, scale: 0 }}
@@ -74,9 +77,9 @@ function BadgesSlide({ data, username, avatar }) {
               >
                 <div className="badge-icon">
                   {badge.icon ? (
-                    <img 
-                      src={badge.icon} 
-                      alt={badge.displayName || badge.name} 
+                    <img
+                      src={badge.icon}
+                      alt={badge.displayName || badge.name}
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.parentElement.innerHTML = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15L8.5 17L9.5 13L6.5 10.5L10.5 10L12 6.5L13.5 10L17.5 10.5L14.5 13L15.5 17L12 15Z" fill="#FFA116"/></svg>';
@@ -84,7 +87,7 @@ function BadgesSlide({ data, username, avatar }) {
                     />
                   ) : (
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 15L8.5 17L9.5 13L6.5 10.5L10.5 10L12 6.5L13.5 10L17.5 10.5L14.5 13L15.5 17L12 15Z" fill="#FFA116"/>
+                      <path d="M12 15L8.5 17L9.5 13L6.5 10.5L10.5 10L12 6.5L13.5 10L17.5 10.5L14.5 13L15.5 17L12 15Z" fill="#FFA116" />
                     </svg>
                   )}
                 </div>
@@ -96,7 +99,7 @@ function BadgesSlide({ data, username, avatar }) {
           </motion.div>
         ) : (
           <motion.div
-            style={{ 
+            style={{
               color: 'rgba(255, 255, 255, 0.5)',
               padding: '2rem',
               background: 'rgba(255, 255, 255, 0.05)',

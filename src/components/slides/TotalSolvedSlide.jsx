@@ -4,10 +4,10 @@ import ShareButton from '../ShareButton';
 
 function TotalSolvedSlide({ data, username, avatar }) {
   const [displayNumber, setDisplayNumber] = useState(0);
-  
+
   const totalSolved = data.solved?.solvedProblem || 0;
   const totalQuestions = data.solved?.totalQuestions || 3500;
-  
+
   // Calculate percentage, cap at 100% for display
   const rawPercentile = (totalSolved / totalQuestions) * 100;
   const percentile = Math.min(rawPercentile, 100).toFixed(1);
@@ -19,7 +19,7 @@ function TotalSolvedSlide({ data, username, avatar }) {
     const steps = 60;
     const increment = totalSolved / steps;
     let current = 0;
-    
+
     const timer = setInterval(() => {
       current += increment;
       if (current >= totalSolved) {
@@ -34,7 +34,7 @@ function TotalSolvedSlide({ data, username, avatar }) {
   }, [totalSolved]);
 
   return (
-    <motion.div 
+    <motion.div
       className="slide stats-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -46,17 +46,18 @@ function TotalSolvedSlide({ data, username, avatar }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          style={{ 
-            fontSize: '1.5rem', 
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 700,
             color: 'rgba(255, 255, 255, 0.7)',
-            marginBottom: '1rem',
+            marginBottom: '1.5rem',
             textAlign: 'center',
           }}
         >
           You've conquered
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="stat-number"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -65,7 +66,7 @@ function TotalSolvedSlide({ data, username, avatar }) {
           {displayNumber.toLocaleString()}
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="stat-label"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -75,7 +76,7 @@ function TotalSolvedSlide({ data, username, avatar }) {
           problems on LeetCode
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="stat-sublabel"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -111,10 +112,10 @@ function TotalSolvedSlide({ data, username, avatar }) {
             <div style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.5)' }}>
               Global Ranking
             </div>
-            <div style={{ 
-              fontSize: '1.5rem', 
+            <div style={{
+              fontSize: '1.5rem',
               fontWeight: 700,
-              color: 'var(--lc-orange)',
+              color: 'white',
               marginTop: '0.5rem',
             }}>
               #{data.profile?.ranking?.toLocaleString() || 'N/A'}

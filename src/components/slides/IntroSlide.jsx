@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 
 function IntroSlide({ username, data }) {
   const avatar = data.profile?.avatar;
-  
+
   return (
-    <motion.div 
+    <motion.div
       className="slide intro-slide"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -31,30 +31,26 @@ function IntroSlide({ username, data }) {
         )}
 
         <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          Welcome
-        </motion.h1>
-
-        <motion.div 
-          className="username-display"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{
+            fontFamily: 'Clash Display, sans-serif',
+            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+            fontWeight: 700,
+            lineHeight: 1.2,
+            marginBottom: '1rem',
+          }}
         >
-          {username}
-        </motion.div>
-
-        <motion.p 
-          className="tagline"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-         Your 2025 LeetCode Journey
-        </motion.p>
+          <span style={{
+            background: 'linear-gradient(135deg, #FFA116 0%, #FF6B35 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>{username}'s</span>
+          <br />
+          <span style={{ color: 'white' }}>2025 LeetCode Journey</span>
+        </motion.h1>
 
         <motion.div
           style={{
@@ -66,7 +62,7 @@ function IntroSlide({ username, data }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
         >
-   
+
         </motion.div>
       </div>
     </motion.div>
