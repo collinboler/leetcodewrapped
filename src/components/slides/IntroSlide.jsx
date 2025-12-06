@@ -36,20 +36,21 @@ function IntroSlide({ username, data }) {
           transition={{ duration: 0.6, delay: 0.4 }}
           style={{
             fontFamily: 'Clash Display, sans-serif',
-            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+            // fontSize removed, controlled by children
             fontWeight: 700,
             lineHeight: 1.2,
             marginBottom: '1rem',
           }}
         >
           <span style={{
+            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
             background: 'linear-gradient(135deg, #FFA116 0%, #FF6B35 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>{username}'s</span>
           <br />
-          <span style={{ color: 'white' }}>2025 LeetCode Journey</span>
+          <span style={{ color: 'white', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>2025 LeetCode Journey</span>
         </motion.h1>
 
         <motion.div

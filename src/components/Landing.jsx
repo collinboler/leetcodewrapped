@@ -93,7 +93,7 @@ function Landing({ onSubmit, error }) {
             <input
               type="text"
               className="username-input"
-              placeholder="type leetcode username"
+              placeholder="leetcode username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={isSubmitting}

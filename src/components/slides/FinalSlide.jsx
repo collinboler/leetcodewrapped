@@ -241,7 +241,7 @@ function FinalSlide({ data, username, avatar }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          That's a wrap, <span style={{ color: '#FFA116' }}>{username}</span>!
+          Want a special wrapped summary <span style={{ color: '#FFA116' }}>{username}</span>?
         </motion.h1>
 
         {/* 
@@ -333,9 +333,6 @@ function FinalSlide({ data, username, avatar }) {
         >
           {!isSent ? (
             <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-              <p style={{ color: 'rgba(255,255,255,0.8)', textAlign: 'center', fontSize: '0.9rem' }}>
-                Let me send you a special wrapped summary!
-              </p>
               <div style={{
                 position: 'relative',
                 width: '100%',
@@ -423,29 +420,23 @@ function FinalSlide({ data, username, avatar }) {
                 margin: '0 auto',
               }}
             >
-              Sent! Check your inbox.
+              sent :)
             </motion.div>
           )}
-        </motion.div>
-
-        <motion.div
-          style={{ marginTop: '1.5rem', marginBottom: '1rem', fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3 }}
-        >
-          made by{' '}
-          <a href="https://collinboler.com" target="_blank" rel="noopener noreferrer" style={{
-            background: 'linear-gradient(to top, #da3400, #ff8c66, #ffb899)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-            display: 'inline-block'
-          }}>
-            collinboler
-          </a>
+          <div style={{ marginTop: '1.5rem', marginBottom: '1rem', fontSize: '1.1rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+            made by{' '}
+            <a href="https://collinboler.com" target="_blank" rel="noopener noreferrer" style={{
+              background: 'linear-gradient(to top, #da3400, #ff8c66, #ffb899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              display: 'inline-block'
+            }}>
+              collinboler
+            </a>
+          </div>
         </motion.div>
 
         {/* Share button inline */}
