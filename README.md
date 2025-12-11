@@ -52,5 +52,7 @@ I was hesitant to implement this because obviously people wouldn't trust inputti
 
 **Note Note:** I used firebase firestore database and trigger email extension to send out emails to users, as well as posthog for analytics. However, you can still clone the repository and run it locally without these features. 
 
-[![Star History Chart](https://www.star-history.com/#collinboler/leetcodewrapped&type=date&legend=top-left)
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=collinboler/leetcodewrapped&type=date&legend=top-left)](https://www.star-history.com/#collinboler/leetcodewrapped&type=date&legend=top-left)
 
