@@ -32,6 +32,7 @@ deployed at [leetcodewrapped.com](https://leetcodewrapped.com)
 │   ├── main.jsx        # entry point & providers
 │   └── firebase.js     # firebase configuration
 ├── functions/          # cloudflare functions (server-side proxy)
+├── live/               # wrapped live: embeddable stats cards (separate pages project)
 ├── public/             # static assets
 ├── firestore.rules     # database security rules
 └── index.html          # html entry point

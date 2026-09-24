@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "live",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd live && npx wrangler pages dev public --port 8788 --kv PRO"
+      ],
+      "port": 8788
+    }
+  ]
+}

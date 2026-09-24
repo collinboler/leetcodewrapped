@@ -5,3 +5,5 @@
 .env
 .env.local
 firestore.rules
+.dev.vars
+live/.wrangler

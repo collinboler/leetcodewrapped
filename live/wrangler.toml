@@ -1,0 +1,11 @@
+# Cloudflare Pages project for live.leetcodewrapped.com (set the Pages root directory to `live`).
+name = "leetcode-wrapped-live"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "public"
+
+# Pro entitlements, written by the Polar webhook. Create the namespace with
+#   npx wrangler kv namespace create PRO
+# then uncomment and paste its id:
+# [[kv_namespaces]]
+# binding = "PRO"
+# id = ""

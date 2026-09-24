@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wrapped Live · LeetCode stats for your site</title>
+    <meta name="description" content="Embed your LeetCode stats on your portfolio or GitHub README with one tag. Cards that update themselves, in light and dark." />
+    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="nav wrap">
+      <a class="brand" href="/"><span class="pulse" aria-hidden="true"></span>Wrapped Live</a>
+      <nav>
+        <a href="#docs">Docs</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://leetcodewrapped.com" class="external">leetcodewrapped.com</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero wrap">
+        <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>Stats that update themselves</p>
+        <h1>Your LeetCode stats, <br />live on your site.</h1>
+        <p class="lede">Paste one tag into your portfolio, blog, or GitHub README. It stays current on its own, with no API keys, build steps, or redeploys.</p>
+      </section>
+
+      <section class="builder wrap" id="builder" aria-label="Card builder">
+        <div class="panel controls">
+          <label class="field" for="username">
+            <span class="label">LeetCode username</span>
+            <span class="input">
+              <span class="prefix">leetcode.com/u/</span>
+              <input id="username" name="username" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="your-name" maxlength="40" />
+              <span class="badge" id="plan-badge" hidden>Pro</span>
+            </span>
+          </label>
+
+          <div class="field">
+            <span class="label" id="layout-label">Layout</span>
+            <div class="segmented" data-key="layout" role="radiogroup" aria-labelledby="layout-label">
+              <button type="button" role="radio" data-value="card">Card</button>
+              <button type="button" role="radio" data-value="compact">Compact</button>
+              <button type="button" role="radio" data-value="heatmap">Heatmap</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label" id="theme-label">Theme</span>
+            <div class="segmented" data-key="theme" role="radiogroup" aria-labelledby="theme-label">
+              <button type="button" role="radio" data-value="auto">Auto</button>
+              <button type="button" role="radio" data-value="light">Light</button>
+              <button type="button" role="radio" data-value="dark">Dark</button>
+            </div>
+          </div>
+
+          <details class="field colors" id="colors">
+            <summary><span class="label">Custom colors</span><span class="tag">Pro</span></summary>
+            <div class="swatches">
+              <label><input type="color" data-color="accent" value="#ffa116" /><span>Accent</span></label>
+              <label><input type="color" data-color="bg" value="#ffffff" /><span>Background</span></label>
+              <label><input type="color" data-color="text" value="#18181b" /><span>Text</span></label>
+              <button type="button" class="link" id="reset-colors">Reset</button>
+            </div>
+            <p class="hint" id="colors-hint">Colors apply to cards with Pro.</p>
+          </details>
+        </div>
+
+        <div class="panel preview">
+          <div class="stage" id="stage">
+            <img id="preview" alt="Preview of your LeetCode stats card" />
+          </div>
+          <p class="note" id="preview-note">Sample data. Enter your username to see yours.</p>
+        </div>
+
+        <div class="panel code">
+          <div class="tabs">
+            <div role="tablist" aria-label="Snippet format">
+              <button type="button" role="tab" data-tab="html">HTML</button>
+              <button type="button" role="tab" data-tab="markdown">Markdown</button>
+              <button type="button" role="tab" data-tab="url">Image URL</button>
+            </div>
+            <button type="button" class="copy" id="copy">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" /><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.2" /></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <pre><code id="snippet"></code></pre>
+          <p class="hint" id="snippet-hint"></p>
+        </div>
+      </section>
+
+      <section class="features wrap" aria-label="Features">
+        <div>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7 3 12l5 5M16 7l5 5-5 5M13.5 4l-3 16" /></svg>
+          <h3>Works anywhere</h3>
+          <p>A plain image for GitHub READMEs, and a web component for everything else.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4.5h-4.5" /></svg>
+          <h3>Keeps itself current</h3>
+          <p>Solve a problem and your card catches up automatically. Nothing to redeploy.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 1 0 16Z" class="fill" /></svg>
+          <h3>Matches your site</h3>
+          <p>Light, dark, or auto, which follows each visitor's system theme.</p>
+        </div>
+      </section>
+
+      <section class="docs wrap" id="docs">
+        <div class="section-head">
+          <h2>Reference</h2>
+          <p>Every card is a URL. Add options as query parameters, or as attributes on the web component.</p>
+        </div>
+
+        <div class="panel endpoint">
+          <code><span class="method">GET</span> /u/<em>{username}</em>.svg</code>
+        </div>
+
+        <div class="table">
+          <div class="row head"><span>Option</span><span>Values</span><span>Description</span></div>
+          <div class="row"><code>layout</code><span><code>card</code> · <code>compact</code> · <code>heatmap</code></span><span>Card shape. Defaults to <code>card</code>.</span></div>
+          <div class="row"><code>theme</code><span><code>auto</code> · <code>light</code> · <code>dark</code></span><span><code>auto</code> follows the viewer's system setting.</span></div>
+          <div class="row"><code>accent <span class="tag">Pro</span></code><span>hex, no <code>#</code></span><span>Heatmap and highlight color.</span></div>
+          <div class="row"><code>bg <span class="tag">Pro</span></code><span>hex, no <code>#</code></span><span>Background. Borders and muted text adapt to it.</span></div>
+          <div class="row"><code>text <span class="tag">Pro</span></code><span>hex, no <code>#</code></span><span>Primary text color.</span></div>
+        </div>
+      </section>
+
+      <section class="pricing wrap" id="pricing">
+        <div class="section-head">
+          <h2>Pricing</h2>
+          <p>The card is free. Pro is a one-time payment, with no subscription.</p>
+        </div>
+
+        <div class="toast" id="toast" role="status" hidden></div>
+
+        <div class="plans">
+          <div class="panel plan">
+            <h3>Free</h3>
+            <p class="price"><strong>$0</strong></p>
+            <ul>
+              <li>All three layouts</li>
+              <li>Light, dark, and auto themes</li>
+              <li>Refreshes every 4 hours</li>
+              <li>Small <span class="mono">leetcodewrapped.com</span> credit</li>
+            </ul>
+            <a class="button secondary" href="#builder">Build your card</a>
+          </div>
+
+          <div class="panel plan featured">
+            <h3>Pro <span class="tag">Launch price</span></h3>
+            <p class="price"><strong>$19</strong> <s>$29</s> <span>one-time</span></p>
+            <ul>
+              <li>Everything in Free</li>
+              <li>No credit, just your stats</li>
+              <li>Custom accent, background, and text colors</li>
+              <li>Refreshes every 30 minutes</li>
+              <li>New layouts as they ship</li>
+            </ul>
+            <a class="button" id="buy" href="/api/checkout">Get Pro</a>
+            <p class="hint" id="buy-hint">Pro is linked to the username in the builder above.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq wrap" aria-label="Questions">
+        <details>
+          <summary>Is this affiliated with LeetCode?</summary>
+          <p>No. Wrapped Live is an independent project. It reads the same public profile data anyone can see on leetcode.com.</p>
+        </details>
+        <details>
+          <summary>How fresh are the stats?</summary>
+          <p>Free cards refresh every 4 hours and Pro cards every 30 minutes. GitHub also caches README images on its end, so a README can lag a little behind your site.</p>
+        </details>
+        <details>
+          <summary>Does my profile need to be public?</summary>
+          <p>Yes. Cards use your public LeetCode profile, so no login or API key is involved.</p>
+        </details>
+        <details>
+          <summary>What happens if LeetCode is down?</summary>
+          <p>Your card keeps showing your last known stats until LeetCode responds again. It never breaks into an empty image.</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer wrap">
+      <span>Wrapped Live · a <a href="https://leetcodewrapped.com">leetcodewrapped.com</a> project</span>
+      <span>Not affiliated with LeetCode.</span>
+    </footer>
+  </body>
+</html>
